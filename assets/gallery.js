@@ -4,7 +4,7 @@
   const slides=[...root.querySelectorAll('.gallery-slide')],dots=[...root.querySelectorAll('.gallery-dot')];
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   const status=root.querySelector('.gallery-status'),counter=root.querySelector('.gallery-current');
-  let active=0,startX=null,timer,paused=false,visible=false,suppressClickUntil=0;
+  let active=0,gesture=null,timer,paused=false,visible=false,suppressClickUntil=0;
   function render(animate=true){
     slides.forEach((slide,i)=>{
       let offset=(i-active+slides.length)%slides.length;
@@ -24,15 +24,33 @@
     root.querySelector('.gallery-caption-note').textContent=slides[active].dataset.note;
   }
   function go(index,user=false){active=(index+slides.length)%slides.length;render();if(user)status.textContent=`${active+1} из ${slides.length}: ${slides[active].dataset.title}`;schedule();}
-  function schedule(){clearTimeout(timer);if(!paused&&!reduced.matches&&visible&&!document.hidden&&!modal.open&&!root.contains(document.activeElement)&&!root.matches(':hover'))timer=setTimeout(()=>go(active+1),6500);}
+  function schedule(){clearTimeout(timer);if(!paused&&!reduced.matches&&visible&&!document.hidden&&!modal.open&&!root.contains(document.activeElement)&&!(matchMedia('(hover: hover)').matches&&root.matches(':hover')))timer=setTimeout(()=>go(active+1),6500);}
   root.querySelector('.gallery-prev').addEventListener('click',()=>go(active-1,true));
   root.querySelector('.gallery-next').addEventListener('click',()=>go(active+1,true));
   dots.forEach((dot,i)=>dot.addEventListener('click',()=>go(i,true)));
   root.querySelector('.gallery-pause').addEventListener('click',event=>{paused=!paused;event.currentTarget.textContent=paused?'Продолжить':'Пауза';event.currentTarget.setAttribute('aria-pressed',String(paused));schedule();});
   const stage=root.querySelector('.gallery-stage');
-  stage.addEventListener('pointerdown',e=>{startX=e.clientX});
-  stage.addEventListener('pointerup',e=>{if(startX!==null&&Math.abs(e.clientX-startX)>45){suppressClickUntil=Date.now()+500;go(active+(e.clientX<startX?1:-1),true);startX=null;}else startX=null;});
-  stage.addEventListener('pointercancel',()=>startX=null);
+  stage.addEventListener('pointerdown',event=>{
+    if(!event.isPrimary||(event.pointerType==='mouse'&&event.button!==0))return;
+    gesture={id:event.pointerId,x:event.clientX,y:event.clientY};
+    clearTimeout(timer);
+  });
+  stage.addEventListener('pointermove',event=>{
+    if(!gesture||gesture.id!==event.pointerId)return;
+    const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;
+    if(Math.abs(dx)>12&&Math.abs(dx)>Math.abs(dy)*1.2&&!stage.hasPointerCapture(event.pointerId))stage.setPointerCapture(event.pointerId);
+  });
+  document.addEventListener('pointerup',event=>{
+    if(!gesture||gesture.id!==event.pointerId)return;
+    const dx=event.clientX-gesture.x,dy=event.clientY-gesture.y;
+    gesture=null;
+    if(Math.abs(dx)>Math.max(32,stage.clientWidth*.1)&&Math.abs(dx)>Math.abs(dy)*1.2){
+      suppressClickUntil=Date.now()+500;
+      go(active+(dx<0?1:-1),true);
+    }else schedule();
+  });
+  document.addEventListener('pointercancel',()=>{gesture=null;schedule()});
+  stage.addEventListener('dragstart',event=>event.preventDefault());
   root.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowLeft'){e.preventDefault();go(active+(e.key==='ArrowRight'?1:-1),true);}});
   root.addEventListener('mouseenter',()=>clearTimeout(timer));root.addEventListener('mouseleave',schedule);
   root.addEventListener('focusin',()=>clearTimeout(timer));root.addEventListener('focusout',e=>{if(!root.contains(e.relatedTarget))schedule()});
