@@ -14,7 +14,7 @@
 .brand-center .car-artwork .logo-car{width:100%;height:auto;max-height:none}
 .car-headlight{position:absolute;width:2.7%;height:6.2%;border-radius:50%;transform:translate(-50%,-50%);z-index:3;background:radial-gradient(ellipse,#fffdf1 25%,#fff3cb 75%,#f6d994 100%);box-shadow:0 0 5px 1px #fff3c9c0,0 0 13px 4px #ffe7a859;pointer-events:none;animation:headlight-idle 5s ease-in-out infinite}
 .car-headlight-left{left:69.1%;top:45.6%}
-.car-headlight-right{left:79.7%;top:47%;width:2.9%;height:8.2%}
+.car-headlight-right{left:79.7%;top:47%;width:2.7%;height:6.2%}
 .car-headlight:before{content:'';position:absolute;left:50%;top:50%;width:clamp(200px,31vw,440px);height:100px;transform:translateY(-50%);transform-origin:left center;clip-path:polygon(0 47%,100% 0,100% 100%,0 53%);background:linear-gradient(90deg,#fff0bf4d,#fff0bf14 65%,transparent);pointer-events:none}
 .car-headlight-left:before{transform:translateY(-50%) rotate(0deg)}
 .car-headlight-right:before{transform:translateY(-50%) rotate(1.5deg);height:92px}
@@ -39,3 +39,11 @@
 .promotions-options button:hover,.promotions-options button[aria-pressed=true]{background:#e6cca1;color:#132522}
 .promotions-status{font-size:12px;color:#c6c3b9;min-height:58px}
 @media(max-width:640px){.topbar .brand-center,.header-inner .brand-center{margin-left:-6px;width:calc(100% - 142px);flex:0 1 auto;min-width:0;gap:5px}.brand-center .wordmark-restaurant{font-size:clamp(10px,2.6vw,16px)}.brand-center .wordmark-children{font-size:clamp(23px,5.8vw,35px)}.brand-center .wordmark-bottom{font-size:clamp(8px,2.25vw,14px)}.promotions-trigger{margin-left:0;padding:10px 12px;font-size:11px}.mobile-header{margin-left:0!important}.promotions-dialog{padding:38px 22px 20px}}
+
+/* Scroll-directed beams share the same lens size and preserve idle geometry. */
+.car-headlight:before{width:var(--beam-length,clamp(200px,31vw,440px));height:var(--beam-height,100px);opacity:var(--beam-opacity,1);transform:translateY(-50%) rotate(var(--beam-angle,0deg))}
+.car-headlight-right:before{height:var(--beam-height,92px);transform:translateY(-50%) rotate(var(--beam-angle,1.5deg))}
+.brand-center.is-projecting .car-headlight{animation:none;opacity:1;filter:brightness(var(--lamp-power,1))}
+.nav-left a.is-beam-lit,.nav-right a.is-beam-lit,.mobile-menu a.is-beam-lit{color:#fff3cf;text-shadow:0 0 9px #ffe3a8aa,0 0 22px #e6cca177}
+@media(max-width:640px){.car-headlight:before{width:var(--beam-length,210px);height:var(--beam-height,58px)}.car-headlight-right:before{height:var(--beam-height,54px)}}
+@media(prefers-reduced-motion:reduce){.brand-center.is-projecting .car-headlight{filter:none}.nav-left a.is-beam-lit,.nav-right a.is-beam-lit{text-shadow:none}}

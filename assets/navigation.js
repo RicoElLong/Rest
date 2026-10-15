@@ -10,7 +10,7 @@
  addEventListener('scroll',update,{passive:true});update();
  const links=[...document.querySelectorAll('.nav-left a[href^="#"],.nav-right a[href^="#"],.mobile-menu a[href^="#"],.footer-links a[href^="#"]')];
  const sections=['top','menu','banquets','gallery','location'].map(id=>document.getElementById(id)).filter(Boolean);
- let pending=false;
- function mark(){pending=false;const offset=masthead.getBoundingClientRect().height+70;let current='top';for(const section of sections)if(section.getBoundingClientRect().top<=offset)current=section.id;if(innerHeight+scrollY>=document.documentElement.scrollHeight-8)current='location';links.forEach(link=>{if(link.hash==='#'+current)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')})}
+ let pending=false,lastY=scrollY,lastDirection=1,lastEvent="";
+ function mark(){pending=false;const offset=masthead.getBoundingClientRect().height+70;let current='top';for(const section of sections)if(section.getBoundingClientRect().top<=offset)current=section.id;if(innerHeight+scrollY>=document.documentElement.scrollHeight-8)current='location';if(scrollY<40)current='top';const delta=scrollY-lastY;if(Math.abs(delta)>1)lastDirection=delta>0?1:-1;lastY=scrollY;const eventKey=current+':'+lastDirection;if(eventKey!==lastEvent){lastEvent=eventKey;dispatchEvent(new CustomEvent('restaurant:sectionchange',{detail:{id:current,direction:lastDirection}}))}links.forEach(link=>{if(link.hash==='#'+current)link.setAttribute('aria-current','location');else link.removeAttribute('aria-current')})}
  addEventListener('scroll',()=>{if(!pending){pending=true;requestAnimationFrame(mark)}},{passive:true});addEventListener('resize',mark);mark();
 })();

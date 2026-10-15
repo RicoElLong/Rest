@@ -1,0 +1,17 @@
+/* The banquet section has one panel, so it must occupy the entire grid. */
+.banquet-section{display:block;width:100%;background:#102018}
+.banquet-section .banquet-panel{box-sizing:border-box;width:100%;padding:64px max(24px,calc((100% - 1320px)/2)) 70px}
+.banquet-section .panel-head{margin-bottom:28px;align-items:center;gap:20px}
+.banquet-section .panel h2{font-size:clamp(52px,5vw,74px)}
+.banquet-section .panel-sub{font-size:10px;margin-top:12px;line-height:1.6}
+.banquet-section .hall-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.banquet-section .hall{border-radius:12px}
+.banquet-section .hall-photo{height:auto;aspect-ratio:1.55}
+.banquet-section .hall-info{padding:20px}
+.banquet-section .hall h3{font-size:12px;line-height:1.5;margin-bottom:14px}
+.banquet-section .hall-meta,.banquet-section .hall-price{font-size:12px}
+.banquet-section .hall-price{margin-top:14px}
+@media(max-width:920px){.banquet-section .hall-grid{gap:14px}.banquet-section .hall-info{padding:16px}.banquet-section .banquet-panel{padding:44px 24px 48px}}
+@media(max-width:640px){.banquet-section .banquet-panel{padding:40px 16px 44px}.banquet-section .panel-head{align-items:flex-start}.banquet-section .panel-sub{max-width:190px;font-size:9px}.banquet-section .hall-grid{grid-template-columns:1fr;gap:20px}.banquet-section .hall-photo{aspect-ratio:1.6}.banquet-section .hall-info{padding:20px}.banquet-section .hall h3{font-size:13px}.banquet-section .text-link{margin-top:16px;min-height:32px}}
+
+.banquet-photo-note{font:11px/1.7 Arial,sans-serif;color:#9da992;margin:0 0 22px}.hall-arrow{width:14px;height:14px}
