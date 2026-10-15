@@ -25,3 +25,5 @@ dialog.booking-dialog[open]{animation:booking-appear .25s ease both}@keyframes b
 @media(max-width:640px){.brand-center{width:min(300px,calc(100% - 56px));flex:0 1 300px}.logo-wordmark{width:calc(48% - 8px);flex-basis:calc(48% - 8px)}}
 
 @media(max-width:640px){.logo-restaurant-restored{font-size:clamp(9px,3.1vw,14px)}}
+/* Keep the gallery navigation accessible without crowding tablet headers. */
+@media(min-width:901px) and (max-width:1150px){.menu-header .desktop-nav{display:none}.menu-header .nav-toggle{display:block;flex:0 0 44px}}
