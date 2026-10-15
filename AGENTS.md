@@ -9,5 +9,5 @@
 
 ## Approved headlight animation
 
-- The user selected the restored headlight animation (mechanics from commit `8681494`, restored by `c81970d`) as the preferred version. Preserve the geometry, equal lens sizes, idle/interaction timing, section sequence and scroll direction behavior in `assets/headlight-scroll.js` unless explicitly asked to change them. Do not reintroduce the rejected narrow spotlight treatment from `c50637d`.
-- Keep headlights and beams warm golden/amber, coordinated with the restaurant palette. The subsequent color-only update does not change animation mechanics.
+- The user selected the restored headlight animation (mechanics from commit `8681494`, restored by `c81970d`) as the preferred version. Preserve the geometry, equal lens sizes, section sequence and scroll direction behavior in `assets/headlight-scroll.js` unless explicitly asked to change them. Do not reintroduce the rejected narrow spotlight treatment from `c50637d`.
+- Latest approved appearance: restore the original cooler cream-white headlight/beam colors, keep the broad cones shown in the user screenshot, and keep soft visible flicker enabled both at rest and during scroll projection. Do not narrow the beams. Respect prefers-reduced-motion.
