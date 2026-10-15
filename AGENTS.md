@@ -6,3 +6,8 @@
 - Restaurant map links must use the exact Yandex organization identity `146001632122`, not a generic text search or the map viewport center. Address: Самара, улица Лейтенанта Шмидта, 1В. Do not infer restaurant coordinates from screenshots of nearby addresses.
 - Keep local asset directories intact (`assets/`, `assets/fonts/`, `assets/vendor/`).
 - Verify layout and navigation on narrow mobile screens and desktop before publishing.
+
+## Approved headlight animation
+
+- The user selected the restored headlight animation (mechanics from commit `8681494`, restored by `c81970d`) as the preferred version. Preserve the geometry, equal lens sizes, idle/interaction timing, section sequence and scroll direction behavior in `assets/headlight-scroll.js` unless explicitly asked to change them. Do not reintroduce the rejected narrow spotlight treatment from `c50637d`.
+- Keep headlights and beams warm golden/amber, coordinated with the restaurant palette. The subsequent color-only update does not change animation mechanics.
