@@ -7,9 +7,10 @@
  let state={id:'top',direction:1};
  function project(animate=true){
   const index=Math.max(0,ids.indexOf(state.id));
-  const reset=index===0||reduced.matches;
+  const reset=reduced.matches||(index===0&&state.direction<0);
   const links=[...document.querySelectorAll('.nav-left a[href^="#"],.nav-right a[href^="#"],.mobile-menu a[href^="#"]')];
   links.forEach(link=>link.classList.toggle('is-beam-lit',!reset&&link.hash==='#'+state.id));
+  brand.parentElement.style.setProperty('--nav-light-power',state.direction>0?'.65':'.3');
   brand.classList.toggle('is-projecting',!reset);
   const link=links.find(link=>link.hash==='#'+state.id&&link.getBoundingClientRect().width>0);
   lamps.forEach((lamp,i)=>{
@@ -17,18 +18,19 @@
    const target=link?.getBoundingClientRect();
    const mobile=innerWidth<=640;
    let length=mobile?210:Math.min(440,Math.max(200,innerWidth*.31));
-   let angle=i?1.5:0,height=mobile?(i?54:58):(i?92:100),opacity=1,power=1;
+   let angle=i?1.5:0,height=mobile?(i?54:58):(i?92:100),opacity=.3,power=1;
    if(!reset){
-    const dx=target?target.x+target.width*.65-(origin.x+origin.width/2):Math.max(80,innerWidth-origin.x-18);
+    const dx=target?target.x+target.width*.5-(origin.x+origin.width/2):Math.max(80,innerWidth-origin.x-18);
     const dy=target?target.y+target.height/2-(origin.y+origin.height/2):0;
-    length=Math.max(80,Math.hypot(dx,dy)+28);
+    length=Math.max(80,Math.hypot(dx,dy)+Math.min(22,(target?.width||44)/2));
     angle=Math.atan2(dy,dx)*180/Math.PI;
-    const intensity=state.direction>0?1:.5;
-    height=(mobile?58:94)+index*(state.direction>0?12:5);
-    opacity=intensity+index*.09;
-    power=1+(state.direction>0?.13:.04)*index;
+    const intensity=state.direction>0?.32:.18;
+    height=target?Math.max(28,target.height*2.8):36;
+    if(state.direction<0)height*=.85;
+    opacity=intensity+index*.025;
+    power=1+(state.direction>0?.045:.015)*index;
     // Extend the second beam slightly further for a layered cone of light.
-    length+=i*12;
+    length+=i*3;
    }
    const props={'--beam-length':length+'px','--beam-height':height+'px','--beam-angle':angle+'deg','--beam-opacity':opacity,'--lamp-power':power};
    if(window.gsap)gsap.to(lamp,{...props,duration:animate&&!reduced.matches?.85:0,ease:'power2.out',overwrite:true});
@@ -37,6 +39,8 @@
  }
  addEventListener('restaurant:sectionchange',event=>{state=event.detail;project()});
  addEventListener('resize',()=>project(false));
+ const mobileMenu=document.querySelector('.mobile-menu');
+ if(mobileMenu)new MutationObserver(()=>project()).observe(mobileMenu,{attributes:true,attributeFilter:['class']});
  reduced.addEventListener('change',()=>project(false));
  // Navigation starts before this script and may already have selected a section.
  const current=document.querySelector('.nav-left [aria-current],.nav-right [aria-current]');
