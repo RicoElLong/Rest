@@ -39,7 +39,6 @@
     clearTimeout(timer);
     timer=setTimeout(()=>brand.classList.remove('is-flickering'),650);
   }
-  window.addEventListener('scroll',flicker,{passive:true});
   function interactive(event){
     if(event.target instanceof Element && event.target.closest('a,button,input,select,textarea,summary'))flicker();
   }
