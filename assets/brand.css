@@ -47,3 +47,5 @@
 .nav-left a.is-beam-lit,.nav-right a.is-beam-lit,.mobile-menu a.is-beam-lit{color:#ffe2ae;text-shadow:0 0 9px #ffd08aaa,0 0 22px #e8b76b77}
 @media(max-width:640px){.car-headlight:before{width:var(--beam-length,210px);height:var(--beam-height,58px)}.car-headlight-right:before{height:var(--beam-height,54px)}}
 @media(prefers-reduced-motion:reduce){.brand-center.is-projecting .car-headlight{filter:none}.nav-left a.is-beam-lit,.nav-right a.is-beam-lit{text-shadow:none}}
+/* Keep long light cones inside the viewport without clipping dropdown height. */
+.topbar-wrap{overflow-x:clip}
