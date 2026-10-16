@@ -14,7 +14,7 @@
  const number=new Intl.NumberFormat('ru-RU');
  let catalog=null,category='grill',opener=null,selected='grill',scrollFrame,searchTimer;
  let bodySnapshot=null,dialogAnimation=null,loadSequence=0;
- const categoryTitle=id=>catalog?.categories.find(c=>c.id===id)?.title||'Все блюда';
+ const categoryTitle=id=>catalog?.categories.find(c=>c.id===id)?.title||'Шашлык и гриль';
  const price=item=>Number.isFinite(item.priceRub)?`${number.format(item.priceRub)} ₽`:'Цена уточняется';
  const normalize=value=>String(value||'').toLocaleLowerCase('ru').replace(/ё/g,'е').normalize('NFC');
  function element(tag,className,text){const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=text;return el;}
@@ -42,7 +42,7 @@
  function syncPanels(){panels.forEach(panel=>{const active=panel.dataset.section===selected;panel.classList.toggle('is-selected',active);panel.setAttribute('aria-expanded',String(active));});}
  function syncCategories(){
   filters.querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.category===category)));
-  heading.textContent=heading.dataset.catalogTitle||(category==='all'?'Меню ресторана':categoryTitle(category));
+  heading.textContent=heading.dataset.catalogTitle||categoryTitle(category);
  }
  function saveUrl(push=false){
   const url=new URL(location.href);
@@ -53,11 +53,9 @@
  }
  function buildCategories(){
   filters.replaceChildren();
-  [{id:'all',title:'Все блюда'},...catalog.categories].forEach(cat=>{
-   const count=cat.id==='all'?catalog.items.length:catalog.items.filter(i=>i.categoryId===cat.id).length;
+  catalog.categories.forEach(cat=>{
    const button=element('button','',cat.title);button.type='button';button.dataset.category=cat.id;button.setAttribute('aria-controls','dish-grid');
-   if(!section.classList.contains('catalog-editorial')){const badge=element('span','',String(count));badge.setAttribute('aria-hidden','true');button.append(badge);}
-   button.addEventListener('click',()=>{category=cat.id;selected=category==='grill'?'grill':category==='desserts-drinks'?'bar':'kitchen';syncPanels();syncCategories();render();saveUrl(true);button.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'nearest',inline:'nearest'});});
+   button.addEventListener('click',()=>{category=cat.id;selected=category==='grill'?'grill':category==='desserts-drinks'?'bar':'kitchen';syncPanels();syncCategories();render();saveUrl(true);});
    filters.append(button);
   });
  }
@@ -91,18 +89,18 @@
  function render(animate=true){
   if(!catalog)return;
   const query=normalize(search.value.trim());
-  let items=catalog.items.filter(item=>(category==='all'||item.categoryId===category)&&normalize(`${item.name} ${categoryTitle(item.categoryId)} ${item.description||''}`).includes(query));
+  let items=catalog.items.filter(item=>item.categoryId===category&&normalize(`${item.name} ${categoryTitle(item.categoryId)} ${item.description||''}`).includes(query));
   if(sort.value==='price-asc')items.sort((a,b)=>(a.priceRub??Infinity)-(b.priceRub??Infinity));
   if(sort.value==='price-desc')items.sort((a,b)=>(b.priceRub??-Infinity)-(a.priceRub??-Infinity));
   if(sort.value==='name')items.sort((a,b)=>a.name.localeCompare(b.name,'ru'));
   if(window.gsap)gsap.killTweensOf([...grid.children]);
   grid.replaceChildren(...items.map(card));grid.setAttribute('aria-busy','false');empty.hidden=items.length>0;
-  announce(`${categoryTitle(category)} · показано ${items.length} из ${catalog.items.length}${search.value.trim()?` · поиск: «${search.value.trim()}»`:''}`);
+  announce(`${categoryTitle(category)} · ${items.length}${search.value.trim()?` · поиск: «${search.value.trim()}»`:''}`);
   if(animate)motion([...grid.children].slice(0,6),{stagger:.02,duration:.24});
  }
  function choose(key,scroll=true){
   if(key==='booking'){openBooking();return;}
-  selected=key;category=key==='grill'?'grill':key==='bar'?'desserts-drinks':'all';search.value='';sort.value='menu';
+  selected=key;category=key==='grill'?'grill':key==='bar'?'desserts-drinks':'khachapuri';search.value='';sort.value='menu';
   section.hidden=false;syncPanels();syncCategories();render();saveUrl(true);
   if(scroll){cancelAnimationFrame(scrollFrame);scrollFrame=requestAnimationFrame(()=>{section.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});heading.focus({preventScroll:true});});}
  }
@@ -114,15 +112,16 @@
  });
  search.addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>{render();saveUrl();},120);});
  sort.addEventListener('change',()=>{render();saveUrl();});
- root.querySelector('.catalog-reset').addEventListener('click',()=>{category='all';selected='kitchen';search.value='';sort.value='menu';syncPanels();syncCategories();render();saveUrl(true);search.focus({preventScroll:true});});
+ root.querySelector('.catalog-reset').addEventListener('click',()=>{search.value='';sort.value='menu';render();saveUrl(true);search.focus({preventScroll:true});});
  function readUrl(){
   if(!catalog)return;
   const url=new URL(location.href),value=url.searchParams.get('category');
   const legacy=url.hash.slice(1);
-  const requested=value||({kitchen:'all',grill:'grill',bar:'desserts-drinks'}[legacy])||(url.searchParams.has('q')?'all':'grill');
-  category=requested==='all'||catalog.categories.some(c=>c.id===requested)?requested:'grill';
+  const requested=value||({kitchen:'khachapuri',grill:'grill',bar:'desserts-drinks'}[legacy])||'grill';
+  category=catalog.categories.some(c=>c.id===requested)?requested:'grill';
   search.value=(url.searchParams.get('q')||'').slice(0,160);sort.value=['price-asc','price-desc','name'].includes(url.searchParams.get('sort'))?url.searchParams.get('sort'):'menu';
   selected=category==='grill'?'grill':category==='desserts-drinks'?'bar':'kitchen';section.hidden=false;syncPanels();syncCategories();render(false);
+  if(requested!==category)saveUrl();
  }
  addEventListener('popstate',readUrl);
  async function load(){
