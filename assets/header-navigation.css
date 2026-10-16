@@ -1,0 +1,12 @@
+/* Larger restaurant navigation with the same brass line as the gastronomic map. */
+.topbar-wrap a.header-section-link,.menu-header a.header-section-link{position:relative;display:inline-flex;align-items:center;min-height:44px;padding-block:10px;color:#dcd5c5;font:normal 14px/1.35 Georgia,'Times New Roman',serif;letter-spacing:.035em;text-decoration:none;white-space:nowrap;transition:color .3s ease}
+.topbar-wrap a.header-section-link:after,.menu-header a.header-section-link:after{content:'';position:absolute;left:0;right:0;bottom:5px;height:1px;background:#d8b778;transform:scaleX(0);transform-origin:left center;transition:transform .35s ease;pointer-events:none}
+.topbar-wrap a.header-section-link[aria-current],.menu-header a.header-section-link[aria-current]{color:#e6cca1;text-decoration:none}
+.topbar-wrap a.header-section-link[aria-current]:after,.menu-header a.header-section-link[aria-current]:after{transform:scaleX(1)}
+.topbar-wrap a.header-section-link:focus-visible,.menu-header a.header-section-link:focus-visible{outline:1px solid #d8b778;outline-offset:3px}
+@media(hover:hover){.topbar-wrap a.header-section-link:hover,.menu-header a.header-section-link:hover{color:#e6cca1;text-decoration:none}.topbar-wrap a.header-section-link:hover:after,.menu-header a.header-section-link:hover:after{transform:scaleX(1)}}
+@media(min-width:921px) and (max-width:1250px){.topbar-wrap a.header-section-link,.menu-header a.header-section-link{font-size:12px;letter-spacing:.015em}.topbar-wrap .nav-left{gap:16px}}
+.topbar-wrap .mobile-menu a.header-section-link,.menu-header .mobile-nav a.header-section-link{font-size:16px;min-height:44px;padding:10px 0}
+/* Native anchor scrolling must not add the header offset twice. */
+#gallery.gallery-section{scroll-margin-top:0}
+@media(prefers-reduced-motion:reduce){.topbar-wrap a.header-section-link,.menu-header a.header-section-link,.topbar-wrap a.header-section-link:after,.menu-header a.header-section-link:after{transition:none}}

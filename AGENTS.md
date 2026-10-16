@@ -17,3 +17,7 @@
 - Keep catalogue data preloaded and its deferred script independent of GSAP loading. The catalogue must stay usable even if the animation library is delayed. Prefer optimized WebP assets for decorative images.
 
 - The interactive catalogue appears on both `index.html` (also `/Rest/`) and `menu.html`. Keep its category navigation and dish details consistent on both entry points using the shared `.catalog-editorial` component styles.
+
+- Default catalogue selection on both entry points is `grill` (10 dishes). An explicit `?category=all` must continue to show all 48 and survive reload; do not expand the full catalogue on first arrival.
+- Do not show filler text about missing recipes, source data, uncertain dish names or unavailable descriptions. Leave editorial fields empty and hide their blocks when meaningful copy is unavailable.
+- Gallery links should align the carousel photograph below the sticky header using a single offset, including after catalogue data changes page height.

@@ -12,7 +12,7 @@
  const dialog=root.querySelector('#dish-dialog'),booking=root.querySelector('#booking-dialog');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const number=new Intl.NumberFormat('ru-RU');
- let catalog=null,category='all',opener=null,selected='kitchen',scrollFrame,searchTimer;
+ let catalog=null,category='grill',opener=null,selected='grill',scrollFrame,searchTimer;
  let bodySnapshot=null,dialogAnimation=null,loadSequence=0;
  const categoryTitle=id=>catalog?.categories.find(c=>c.id===id)?.title||'Все блюда';
  const price=item=>Number.isFinite(item.priceRub)?`${number.format(item.priceRub)} ₽`:'Цена уточняется';
@@ -46,7 +46,7 @@
  }
  function saveUrl(push=false){
   const url=new URL(location.href);
-  if(category==='all')url.searchParams.delete('category');else url.searchParams.set('category',category);
+  url.searchParams.set('category',category);
   const query=search.value.trim();if(query)url.searchParams.set('q',query);else url.searchParams.delete('q');
   if(sort.value==='menu')url.searchParams.delete('sort');else url.searchParams.set('sort',sort.value);
   history[push?'pushState':'replaceState'](null,'',url);
@@ -118,7 +118,9 @@
  function readUrl(){
   if(!catalog)return;
   const url=new URL(location.href),value=url.searchParams.get('category');
-  const legacy=url.hash.slice(1);category=catalog.categories.some(c=>c.id===value)?value:legacy==='grill'?'grill':legacy==='bar'?'desserts-drinks':'all';
+  const legacy=url.hash.slice(1);
+  const requested=value||({kitchen:'all',grill:'grill',bar:'desserts-drinks'}[legacy])||(url.searchParams.has('q')?'all':'grill');
+  category=requested==='all'||catalog.categories.some(c=>c.id===requested)?requested:'grill';
   search.value=(url.searchParams.get('q')||'').slice(0,160);sort.value=['price-asc','price-desc','name'].includes(url.searchParams.get('sort'))?url.searchParams.get('sort'):'menu';
   selected=category==='grill'?'grill':category==='desserts-drinks'?'bar':'kitchen';section.hidden=false;syncPanels();syncCategories();render(false);
  }
@@ -133,6 +135,7 @@
    if(sequence!==loadSequence)return;
    catalog=data;catalog.categories.sort((a,b)=>a.order-b.order);buildCategories();readUrl();
    if(new URL(location.href).hash==='#selected-menu')section.scrollIntoView({behavior:'instant',block:'start'});
+   dispatchEvent(new CustomEvent('restaurant:catalogready'));
   }catch(err){if(sequence!==loadSequence)return;error.hidden=false;grid.setAttribute('aria-busy','false');announce('Меню пока недоступно. Повторите загрузку.');}
  }
  root.querySelector('.catalog-retry').addEventListener('click',load);
@@ -140,8 +143,9 @@
   if(dialog.open)return;
   cancelAnimationFrame(scrollFrame);opener=button;
   root.querySelector('#dialog-title').textContent=item.name;root.querySelector('#dialog-category').textContent=categoryTitle(item.categoryId);
-  root.querySelector('#dialog-note').textContent=item.description||'Описание уточняется у ресторана.';
-  root.querySelector('#dialog-history').textContent=item.history||'Гастрономическая заметка готовится.';
+  const note=root.querySelector('#dialog-note'),history=root.querySelector('#dialog-history');
+  note.textContent=item.description||'';note.hidden=!item.description;
+  history.textContent=item.history||'';history.closest('.dialog-story').hidden=!item.history;
   root.querySelector('#dialog-price').textContent=price(item);
   root.querySelector('#dialog-price-status').textContent=item.priceVerified?'Цена подтверждена.':'Предварительная цена. Подтвердите перед заказом.';
   const weight=root.querySelector('#dialog-weight');weight.hidden=!Number.isFinite(item.weightGrams);weight.textContent=weight.hidden?'':`Выход порции: ${number.format(item.weightGrams)} г`;
