@@ -185,3 +185,13 @@ test('Logo loads once as a filter-free high-resolution PNG on retina phones and 
   const logo=p.locator('.logo-car');await logo.evaluate(img=>img.decode());const info=await logo.evaluate(img=>({width:img.naturalWidth,height:img.naturalHeight,ratio:img.getBoundingClientRect().width/img.getBoundingClientRect().height,filter:getComputedStyle(img).filter,src:img.currentSrc}));assert.equal(info.width,2172);assert.equal(info.height,724);assert(Math.abs(info.ratio-3)<.01);assert.equal(info.filter,'none');assert(info.src.includes('logo-car-compatible.png'));assert.equal(requests,1);assert.equal(await p.locator('.car-headlight').count(),2);assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await p.close();
  }
 });
+test('Both pages share the black-green masthead palette and the updated contact number',async()=>{
+ for(const entry of ['index.html','menu.html'])for(const width of [390,1440]){
+  const p=await pageAt(entry,{viewport:{width,height:950}});assert.equal(await p.locator('meta[name="theme-color"]').getAttribute('content'),'#080f0b');
+  for(const selector of ['body','.menu-catalog.catalog-editorial','.banquet-panel','.gallery-section','.location-section'])for(const node of await p.locator(selector).all())assert.equal(await node.evaluate(el=>getComputedStyle(el).backgroundColor),'rgb(8, 15, 11)');
+  assert.equal(await p.locator('a[href^="tel:"]').evaluateAll(nodes=>nodes.length>0&&nodes.every(el=>el.getAttribute('href')==='tel:+78920000000')),true);
+  assert.doesNotMatch(await p.locator('body').textContent(),/937|644-13|000-00=00/);assert.match(await p.locator('body').textContent(),/\+7 \(892\) 000-00-00/);
+  if(entry==='index.html')assert.equal(await p.locator('.header-phone:visible').evaluate(el=>getComputedStyle(el).color),'rgb(255, 255, 255)');
+  assert.equal(await count(p),10);assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await p.close();
+ }
+});

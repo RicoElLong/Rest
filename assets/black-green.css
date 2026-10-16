@@ -1,0 +1,15 @@
+/* Restaurant palette based on the approved masthead: near-black with a green tint. */
+:root{--restaurant-bg:#080f0b;--restaurant-surface:#0b1710;--restaurant-raised:#102016;--restaurant-line:#e6cca126;--ink:#080f0b;--deep:#0b1710;--deep2:#102016}
+body{background:var(--restaurant-bg);color-scheme:dark}
+.home-menu,.menu-page{--bg:var(--restaurant-bg);--line:var(--restaurant-line);background:var(--restaurant-bg)}
+.topbar-wrap,.menu-header{background:var(--restaurant-bg)}
+.topbar-wrap.is-scrolled,.menu-header.is-scrolled{background:#080f0be8}
+.menu-catalog.catalog-editorial,.banquet-section,.banquet-section .banquet-panel,.gallery-section,.location-section,.hero-bottom,footer,.menu-footer{background:var(--restaurant-bg)}
+:is(.home-menu,.menu-page) .menu-panel:nth-child(n){background:linear-gradient(145deg,#102016,#080f0b)}
+.menu-catalog .menu-dish,.banquet-section .hall{background:var(--restaurant-surface);border-color:var(--restaurant-line)}
+.menu-catalog .dish-visual,.location-map{background-color:var(--restaurant-surface)}
+.topbar-wrap .mobile-menu,.menu-header .mobile-nav{background:var(--restaurant-surface)}
+#dish-dialog,.promotions-dialog,.booking-dialog,.gallery-viewer{background:var(--restaurant-surface)}
+#dish-dialog .dialog-drag-handle,#dish-dialog .dialog-image-wrap{background-color:var(--restaurant-surface)}
+.menu-catalog select option{background:var(--restaurant-surface)}
+@media(max-width:640px){:is(.home-menu,.menu-page) .menu-catalog.catalog-editorial .menu-dish{background:var(--restaurant-surface)}}
