@@ -115,7 +115,7 @@ test('Homepage and menu page share text-only categories and omit recipe-status l
  const home=await pageAt('');assert.equal(await home.locator('.catalog-categories button span').count(),0);assert.equal(await home.locator('.dialog-composition,.dialog-hint').count(),0);assert.equal(await home.locator('#selection-heading').innerText(),'Гастрономическая карта');assert.equal(await count(home),10);assert.equal(await home.locator('[data-category="grill"]').evaluate(el=>getComputedStyle(el).borderRadius),'0px');await home.close();
 });
 test('Premium cards preserve data and interactions while changing only menu.html presentation',async()=>{
- for(const [width,expectedColumns]of [[320,1],[390,1],[600,2],[768,2],[1024,3],[1440,3]]){
+ for(const [width,expectedColumns]of [[320,1],[390,2],[600,2],[768,2],[1024,3],[1440,3]]){
   const p=await pageAt('menu.html',{viewport:{width,height:950}});assert.equal(await count(p),10);assert.equal(await p.locator('.dish-detail-hint,.dish-more,.dish-category').count(),0);
   const style=await p.locator('.dish-visual').first().evaluate(el=>{const r=el.getBoundingClientRect();return {ratio:r.width/r.height,border:getComputedStyle(el).borderTopWidth,columns:getComputedStyle(document.querySelector('.dish-grid')).gridTemplateColumns.trim().split(/\s+/).length,overflow:document.documentElement.scrollWidth>innerWidth};});
   assert(Math.abs(style.ratio-4/3)<.002);assert.equal(style.border,'0px');assert.equal(style.columns,expectedColumns);assert.equal(style.overflow,false);await p.close();
@@ -157,4 +157,25 @@ test('Gallery navigation and a delayed catalogue align the whole image below the
 });
 test('Unwritten dish descriptions and histories stay absent instead of rendering fallback explanations',async()=>{
  const p=await pageAt('menu.html?category=salads');await p.locator('[data-item-id="salads-02"] .dish-button').click();assert.equal(await p.locator('#dialog-title').innerText(),'Олимпус с говядиной');assert.equal(await p.locator('#dialog-note').isVisible(),false);assert.equal(await p.locator('.dialog-story').isVisible(),false);assert.doesNotMatch(await p.locator('#dish-dialog').innerText(),/нет единого|исходных данных|Описание уточняется|Гастрономическая заметка/);await p.close();
+});
+test('Phone and tablet layouts keep compact tiles, readable controls and benefits in normal flow',async()=>{
+ for(const entry of ['index.html','menu.html'])for(const width of [320,360,390,430,640,768,920]){
+  const p=await pageAt(entry,{viewport:{width,height:844},isMobile:true,hasTouch:true});await p.evaluate(()=>document.fonts.ready);
+  assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
+  const tiles=await p.locator('.menu-panels').evaluate(el=>{const frame=el.getBoundingClientRect();return {height:frame.height,columns:getComputedStyle(el).gridTemplateColumns.split(' ').length,inside:[...el.querySelectorAll('.menu-panel')].every(panel=>{const r=panel.getBoundingClientRect(),t=panel.querySelector('.panel-title').getBoundingClientRect();return r.left>=frame.left-1&&r.right<=frame.right+1&&t.left>=r.left&&t.right<=r.right&&t.bottom<=r.bottom;})};});
+  assert.equal(tiles.columns,2,`${entry} ${width}`);assert(tiles.height<=360);assert.equal(tiles.inside,true,`${entry} ${width}`);
+  await p.waitForFunction(()=>[...document.querySelectorAll('.menu-panel img')].every(img=>img.complete&&img.naturalWidth>0));
+  for(const selector of ['#dish-search','#dish-sort'])assert((await p.locator(selector).evaluate(el=>parseFloat(getComputedStyle(el).fontSize)))>=16);
+  const header=p.locator(entry==='index.html'?'.topbar-wrap':'.menu-header'),toggle=header.locator('button[aria-controls]').first();const logo=await header.locator('.brand-center').boundingBox(),control=await toggle.boundingBox();assert(logo.x+logo.width<=control.x-4);assert(control.width>=44&&control.height>=44);
+  if(entry==='index.html')assert.equal(await p.locator('.hero-bottom').evaluate(el=>getComputedStyle(el).position),'static');
+  await p.locator('[data-section="grill"]').click();await p.waitForFunction(()=>{const section=document.querySelector('#selected-menu').getBoundingClientRect(),header=document.querySelector('.topbar-wrap,.menu-header').getBoundingClientRect();return section.top>=header.height+6&&section.top<=header.height+40;});
+  assert.equal(await count(p),10);assert.deepEqual(p.errors,[]);await p.close();
+ }
+});
+test('Mobile menu closes outside the header and when returning to desktop',async()=>{
+ for(const entry of ['index.html','menu.html']){
+  const p=await pageAt(entry,{viewport:{width:390,height:844}}),header=p.locator(entry==='index.html'?'.topbar-wrap':'.menu-header'),toggle=header.locator('button[aria-controls]').first();
+  await toggle.click();assert.equal(await toggle.getAttribute('aria-expanded'),'true');await p.locator('#selection-heading').click();assert.equal(await toggle.getAttribute('aria-expanded'),'false');
+  await toggle.click();await p.keyboard.press('Escape');assert.equal(await toggle.getAttribute('aria-expanded'),'false');await toggle.click();await p.setViewportSize({width:1440,height:950});await p.waitForFunction(()=>document.querySelector('.mobile-toggle,.nav-toggle').getAttribute('aria-expanded')==='false');assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await p.close();
+ }
 });

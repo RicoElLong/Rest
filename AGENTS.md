@@ -24,3 +24,4 @@
 - Never show the written phone number in desktop or mobile headers. Keep booking links functional. Promotions belongs at the right of the gastronomic map heading, not in the header; its filled brass button and header booking buttons keep black text on hover, focus and press.
 - Do not show filler text about missing recipes, source data, uncertain dish names or unavailable descriptions. Leave editorial fields empty and hide their blocks when meaningful copy is unavailable.
 - Gallery links should align the carousel photograph below the sticky header using a single offset, including after catalogue data changes page height.
+- Keep mobile layout overrides in `assets/mobile.css`: up to 920px the chooser is a compact 2×2 grid and the benefits strip stays in normal document flow. At phone widths use matching readable cards on both pages (one column below 360px, two above), 16px search controls and touch targets of at least 44px. Preserve the desktop layout.

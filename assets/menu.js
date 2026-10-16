@@ -201,8 +201,9 @@
  function closeNav(){if(!nav||!toggle)return;nav.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.textContent='☰';toggle.setAttribute('aria-label','Открыть навигацию');}
  toggle?.addEventListener('click',()=>{const open=nav.hidden;nav.hidden=!open;toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'×':'☰';toggle.setAttribute('aria-label',open?'Закрыть навигацию':'Открыть навигацию');});
  nav?.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeNav));
+ document.addEventListener('click',event=>{if(nav&&!nav.hidden&&!event.target.closest('.menu-header'))closeNav();});
  document.addEventListener('keydown',event=>{if(event.key==='Escape'&&nav&&!nav.hidden){closeNav();toggle?.focus();}});
- matchMedia('(min-width: 1151px)').addEventListener('change',event=>{if(event.matches)closeNav();});
+ matchMedia('(min-width: 921px)').addEventListener('change',event=>{if(event.matches)closeNav();});
  const header=document.querySelector('.menu-header');const updateHeader=()=>header?.classList.toggle('is-scrolled',scrollY>16);addEventListener('scroll',updateHeader,{passive:true});updateHeader();
  reduced.addEventListener('change',()=>{if(reduced.matches){dialogAnimation?.kill();if(window.gsap)gsap.set([...grid.children,dialog],{clearProps:'opacity,transform'});}});
  section.hidden=false;load();
