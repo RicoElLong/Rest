@@ -23,3 +23,9 @@
 @media(min-width:921px) and (max-width:1250px){.topbar-wrap .header-phone{font-size:12px;letter-spacing:.015em}}
 @media(max-width:920px){.topbar-wrap .header-phone{font-size:16px}}
 @media(max-width:640px){.topbar-wrap .header-phone{top:0;min-height:24px}}
+
+/* Desktop phone shares the booking flex row; phones retain the compact corner contact. */
+.topbar-wrap .header-phone-mobile{display:none}
+.topbar-wrap .nav-right .header-phone{position:static;min-height:44px;font-size:14px;color:#e6cca1;letter-spacing:.035em}
+@media(min-width:921px) and (max-width:1380px){.topbar-wrap .topbar{column-gap:12px}.topbar-wrap .nav-left,.topbar-wrap .nav-right{gap:12px}.topbar-wrap a.header-section-link,.topbar-wrap .nav-right .header-phone{font-size:12px;letter-spacing:.015em}}
+@media(max-width:920px){.topbar-wrap .header-phone-mobile{display:inline-flex}}
