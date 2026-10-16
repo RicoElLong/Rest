@@ -17,7 +17,9 @@
 @media(prefers-reduced-motion:reduce){.topbar-wrap a.header-section-link,.menu-header a.header-section-link,.topbar-wrap a.header-section-link:after,.menu-header a.header-section-link:after{transition:none}}
 
 /* Explicit contact number requested in the top-right corner of the home header. */
-.topbar-wrap .header-phone{position:absolute;top:4px;right:0;z-index:4;display:inline-flex;align-items:center;min-height:28px;color:#e6cca1;font:12px/1.4 Arial,sans-serif;font-variant-numeric:tabular-nums;letter-spacing:.02em;text-decoration:none;white-space:nowrap}
+.topbar-wrap .header-phone{position:absolute;top:4px;right:0;z-index:4;display:inline-flex;align-items:center;min-height:28px;color:#e6cca1;font:normal 14px/1.35 Georgia,'Times New Roman',serif;font-variant-numeric:tabular-nums;letter-spacing:.035em;text-decoration:none;white-space:nowrap}
 .topbar-wrap .header-phone:hover{color:#f2e6d1}
 .topbar-wrap .header-phone:focus-visible{outline:1px solid #e6cca1;outline-offset:2px}
-@media(max-width:640px){.topbar-wrap .header-phone{top:0;min-height:24px;font-size:11px}}
+@media(min-width:921px) and (max-width:1250px){.topbar-wrap .header-phone{font-size:12px;letter-spacing:.015em}}
+@media(max-width:920px){.topbar-wrap .header-phone{font-size:16px}}
+@media(max-width:640px){.topbar-wrap .header-phone{top:0;min-height:24px}}
