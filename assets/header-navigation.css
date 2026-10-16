@@ -1,3 +1,4 @@
+@font-face{font-family:'Phone Montserrat';src:url('fonts/montserrat-latin-900-normal.woff2') format('woff2');font-weight:900;font-style:normal;font-display:swap}
 /* Larger restaurant navigation with the same brass line as the gastronomic map. */
 .topbar-wrap a.header-section-link,.menu-header a.header-section-link{position:relative;display:inline-flex;align-items:center;min-height:44px;padding-block:10px;color:#dcd5c5;font:normal 14px/1.35 Georgia,'Times New Roman',serif;letter-spacing:.035em;text-decoration:none;white-space:nowrap;transition:color .3s ease}
 .topbar-wrap a.header-section-link:after,.menu-header a.header-section-link:after{content:'';position:absolute;left:0;right:0;bottom:5px;height:1px;background:#d8b778;transform:scaleX(0);transform-origin:left center;transition:transform .35s ease;pointer-events:none}
@@ -29,3 +30,9 @@
 .topbar-wrap .nav-right .header-phone{position:static;min-height:44px;font-size:14px;color:#e6cca1;letter-spacing:.035em}
 @media(min-width:921px) and (max-width:1380px){.topbar-wrap .topbar{column-gap:12px}.topbar-wrap .nav-left,.topbar-wrap .nav-right{gap:12px}.topbar-wrap a.header-section-link,.topbar-wrap .nav-right .header-phone{font-size:12px;letter-spacing:.015em}}
 @media(max-width:920px){.topbar-wrap .header-phone-mobile{display:inline-flex}}
+
+/* Bold white numerals matching the supplied phone reference. */
+.topbar-wrap .header-phone,.topbar-wrap .nav-right .header-phone{font-family:'Phone Montserrat',Arial,sans-serif;font-weight:900;font-size:20px;line-height:1.2;letter-spacing:-.025em;color:#fff;-webkit-text-fill-color:#fff}
+.topbar-wrap .header-phone:is(:hover,:focus,:visited){color:#fff;-webkit-text-fill-color:#fff}
+@media(min-width:921px) and (max-width:1380px){.topbar-wrap .nav-right .header-phone{font-size:18px}.topbar-wrap .topbar{column-gap:8px}.topbar-wrap .nav-left,.topbar-wrap .nav-right{gap:8px}}
+@media(max-width:920px){.topbar-wrap .header-phone{font-size:18px}}
