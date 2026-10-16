@@ -7,58 +7,109 @@
     "Рабочий каталог на основе цен, перечисленных в предыдущем сообщении этой беседы; не является подтверждённым актуальным прайс-листом ресторана.",
     "Перед публикацией подтвердить цены, наличие, состав и выход блюд у ресторана.",
     "image=null: индивидуальная фотография пока не предоставлена. Нельзя использовать общий коллаж как якобы исходное HD-фото.",
-    "Описания и истории — редакционный гастрономический контекст, не подтверждённая рецептура ресторана. Вес, ингредиенты и наличие остаются неизвестными."
+    "Описания и истории — редакционный гастрономический контекст, не подтверждённая рецептура ресторана. Вес, ингредиенты и наличие остаются неизвестными.",
+    "placeholderImage в категории — временное иллюстративное фото. Индивидуальные снимки блюд позже добавляются в item.image и автоматически заменяют заглушку."
   ],
   "categories": [
     {
       "id": "grill",
       "title": "Шашлык и гриль",
-      "order": 1
+      "order": 1,
+      "placeholderImage": {
+        "src": "assets/grill-lamb-720.webp",
+        "size": "cover",
+        "position": "center"
+      }
     },
     {
       "id": "khachapuri",
       "title": "Хачапури и выпечка",
-      "order": 2
+      "order": 2,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 327.1084%",
+        "position": "0% 0.0000%"
+      }
     },
     {
       "id": "hot-appetizers",
       "title": "Горячие закуски",
-      "order": 3
+      "order": 3,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 327.1084%",
+        "position": "50% 0.0000%"
+      }
     },
     {
       "id": "soups",
       "title": "Супы",
-      "order": 4
+      "order": 4,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 327.1084%",
+        "position": "100% 0.0000%"
+      }
     },
     {
       "id": "fish",
       "title": "Рыба",
-      "order": 5
+      "order": 5,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 327.1084%",
+        "position": "0% 44.0318%"
+      }
     },
     {
       "id": "salads",
       "title": "Салаты",
-      "order": 6
+      "order": 6,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 327.1084%",
+        "position": "50% 44.0318%"
+      }
     },
     {
       "id": "cold-appetizers",
       "title": "Холодные закуски",
-      "order": 7
+      "order": 7,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 327.1084%",
+        "position": "100% 44.0318%"
+      }
     },
     {
       "id": "sides",
       "title": "Гарниры и хлеб",
-      "order": 8
+      "order": 8,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 257.3460%",
+        "position": "0% 100.0000%"
+      }
     },
     {
       "id": "sauces",
       "title": "Соусы",
-      "order": 9
+      "order": 9,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 257.3460%",
+        "position": "50% 100.0000%"
+      }
     },
     {
       "id": "desserts-drinks",
       "title": "Десерты и напитки",
-      "order": 10
+      "order": 10,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 257.3460%",
+        "position": "100% 100.0000%"
+      }
     }
   ],
   "items": [

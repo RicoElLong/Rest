@@ -14,7 +14,7 @@ before(async()=>{
    if(pathname.endsWith('/'))pathname+='index.html';
    const file=path.resolve(root,'.'+pathname);
    if(!file.startsWith(root+path.sep))throw Error('Outside root');
-   const mime={'.html':'text/html','.js':'text/javascript','.json':'application/json','.css':'text/css','.svg':'image/svg+xml','.jpg':'image/jpeg','.png':'image/png'}[path.extname(file)]||'application/octet-stream';
+   const mime={'.html':'text/html','.js':'text/javascript','.json':'application/json','.css':'text/css','.svg':'image/svg+xml','.jpg':'image/jpeg','.png':'image/png','.webp':'image/webp'}[path.extname(file)]||'application/octet-stream';
    res.setHeader('Content-Type',mime);res.end(fs.readFileSync(file));
   }catch{res.writeHead(404);res.end('Not found');}
  });
@@ -42,6 +42,19 @@ test('Every category shows exactly its JSON positions and preserves URL state',a
  assert.equal(seen.size,48);
  await p.reload();await p.locator('.menu-dish').first().waitFor();assert.equal(await count(p),2);assert.deepEqual(p.errors,[]);await p.close();
 });
+test('Local temporary category photos load in cards and dialogs on both entry points',async()=>{
+ for(const entry of ['index.html','menu.html']){const p=await pageAt(entry);
+  for(const cat of data.categories){
+   assert(cat.placeholderImage?.src);assert(fs.existsSync(path.join(root,cat.placeholderImage.src)));
+   await category(p,cat.id);assert.equal(await p.locator('.dish-placeholder.has-category-photo').count(),data.items.filter(i=>i.categoryId===cat.id).length);
+   const photo=p.locator('.dish-placeholder.has-category-photo').first();assert.equal(await photo.innerText(),'Временное фото');
+   const background=await photo.evaluate(el=>getComputedStyle(el).backgroundImage);assert(background.includes(cat.placeholderImage.src));
+   await p.evaluate(async src=>{const image=new Image();image.src=src;await image.decode();if(!image.naturalWidth)throw Error('Empty placeholder image');},new URL(cat.placeholderImage.src,p.url()).href);
+   await p.locator('.dish-button').first().click();const modal=p.locator('.catalog-dialog-placeholder');assert.equal(await modal.isVisible(),true);assert.equal(await modal.evaluate(el=>getComputedStyle(el).backgroundImage),background);assert.equal(await modal.innerText(),'Временное фото');assert.equal(await p.locator('.dialog-zoom').isVisible(),false);await p.keyboard.press('Escape');
+  }
+  assert.deepEqual(p.errors,[]);await p.close();
+ }
+});
 test('All 48 detail dialogs preserve exact names, prices, histories and unknown recipe fields',async()=>{
  const p=await pageAt();let active='grill';
  for(const item of data.items){if(item.categoryId!==active){await category(p,item.categoryId);active=item.categoryId;}const card=p.locator(`[data-item-id="${item.id}"] .dish-button`);await card.click();assert.equal(await p.locator('#dialog-title').innerText(),item.name);assert.equal((await p.locator('#dialog-price').innerText()).replace(/\s/g,''),`${item.priceRub}₽`);assert.equal(await p.locator('#dialog-history').textContent(),item.history||'');assert.equal(await p.locator('.dialog-story').isVisible(),Boolean(item.history));assert.match(await p.locator('#dialog-price-status').innerText(),/Предварительная/);assert.equal(await p.locator('#dialog-weight').isVisible(),false);assert.equal(await p.locator('.dialog-zoom').isVisible(),false);await p.keyboard.press('Escape');assert.equal(await card.evaluate(el=>document.activeElement===el),true);}
@@ -67,7 +80,7 @@ test('Keyboard opens with Enter/Space, native dialog traps focus, Escape restore
  const p=await pageAt();const button=p.locator('.dish-button').first();for(const key of ['Enter','Space']){await button.focus();await p.keyboard.press(key);assert.equal(await p.locator('#dish-dialog').isVisible(),true);for(let i=0;i<12;i++){await p.keyboard.press('Tab');assert.equal(await p.evaluate(()=>document.querySelector('#dish-dialog').contains(document.activeElement)),true);}await p.keyboard.press('Escape');assert.equal(await button.evaluate(el=>document.activeElement===el),true);}await p.close();
 });
 test('Failed JSON request offers a working retry',async()=>{
- const p=await browser.newPage({reducedMotion:'reduce'});let fail=true;await p.route('**/assets/menu.json',route=>fail?route.abort():route.continue());await p.goto(base+'menu.html');await p.locator('.catalog-error').waitFor();assert.equal(await count(p),0);fail=false;await p.locator('.catalog-retry').click();await p.locator('.menu-dish').first().waitFor();assert.equal(await count(p),10);assert.equal(await p.locator('.catalog-error').isVisible(),false);await p.close();
+ const p=await browser.newPage({reducedMotion:'reduce'});let fail=true;await p.route('**/assets/menu.json*',route=>fail?route.abort():route.continue());await p.goto(base+'menu.html');await p.locator('.catalog-error').waitFor();assert.equal(await count(p),0);fail=false;await p.locator('.catalog-retry').click();await p.locator('.menu-dish').first().waitFor();assert.equal(await count(p),10);assert.equal(await p.locator('.catalog-error').isVisible(),false);await p.close();
 });
 test('Mobile layouts and homepage keep navigation and contacts after gallery',async()=>{
  for(const width of [320,390,430,768,1024]){const p=await pageAt('',{viewport:{width,height:950},isMobile:width<768,hasTouch:width<768});assert.equal(await count(p),10);assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.equal(await p.evaluate(()=>[...document.querySelectorAll('section')].at(-1).id),'location');await p.locator('.dish-button').first().click();assert.equal(await p.evaluate(()=>document.body.style.position),'fixed');assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await p.keyboard.press('Escape');await p.waitForFunction(()=>document.body.style.position!=='fixed');assert.equal(await p.evaluate(()=>document.body.style.position),'');assert.deepEqual(p.errors,[]);await p.close();}
@@ -80,7 +93,7 @@ test('Mobile categories wrap without sideways scrolling; content scroll keeps di
 });
 test('Image data supports a full-size photo/zoom and failed photos fall back honestly',async()=>{
  const p=await browser.newPage({reducedMotion:'reduce'});let broken=false;
- await p.route('**/assets/menu.json',route=>{const fixture=structuredClone(data);fixture.items[0].image={src:broken?'missing-photo.webp':'assets/gallery/dinner.jpg'};fixture.items[0].imageStatus='reference';return route.fulfill({json:fixture});});
+ await p.route('**/assets/menu.json*',route=>{const fixture=structuredClone(data);fixture.items[0].image={src:broken?'missing-photo.webp':'assets/gallery/dinner.jpg'};fixture.items[0].imageStatus='reference';return route.fulfill({json:fixture});});
  // A relative image path is site-relative, as in the supplied catalogue schema.
  await p.goto(base+'menu.html');await p.locator('.menu-dish').first().waitFor();await p.locator('.dish-button').first().click();await p.waitForFunction(()=>document.querySelector('#dialog-image').naturalWidth>0);assert.equal(await p.locator('.dialog-zoom').isVisible(),true);await p.locator('.dialog-zoom').click();assert.equal(await p.locator('.dialog-zoom').getAttribute('aria-pressed'),'true');await p.keyboard.press('Escape');broken=true;await p.reload();await p.locator('.dish-button').first().click();await p.waitForTimeout(150);assert.equal(await p.locator('.catalog-dialog-placeholder').isVisible(),true);assert.equal(await p.locator('.dialog-zoom').isVisible(),false);await p.close();
 });
@@ -89,7 +102,7 @@ test('Existing kitchen, grill, bar and booking panels stay connected to the new 
 });
 test('Catalogue becomes usable while the animation library is still downloading',async()=>{
  const p=await browser.newPage({reducedMotion:'reduce'});let release;const gate=new Promise(resolve=>release=resolve);let libraryFinished=false,jsonRequests=0;
- p.on('request',req=>{if(req.url().endsWith('/assets/menu.json'))jsonRequests++;});
+ p.on('request',req=>{if(new URL(req.url()).pathname.endsWith('/assets/menu.json'))jsonRequests++;});
  await p.route('**/assets/vendor/gsap.min.js',async route=>{await gate;libraryFinished=true;await route.continue();});
  try{await p.goto(base+'menu.html#selected-menu',{waitUntil:'commit'});await p.locator('.menu-dish').first().waitFor({timeout:5000});assert.equal(await count(p),10);assert.equal(libraryFinished,false);assert.equal(jsonRequests,1);await category(p,'soups');assert.equal(await count(p),3);}finally{release();await p.waitForLoadState('domcontentloaded');await p.close();}
 });
@@ -109,7 +122,7 @@ test('Premium cards preserve data and interactions while changing only menu.html
 });
 test('Menu photo zooms five percent on hover and gets a soft glow without changing full-photo details',async()=>{
  const p=await browser.newPage({viewport:{width:1440,height:1000},reducedMotion:'no-preference'});
- await p.route('**/assets/menu.json',route=>{const fixture=structuredClone(data);fixture.items[0].image='assets/gallery/dinner.jpg';return route.fulfill({json:fixture});});
+ await p.route('**/assets/menu.json*',route=>{const fixture=structuredClone(data);fixture.items[0].image='assets/gallery/dinner.jpg';return route.fulfill({json:fixture});});
  await p.goto(base+'menu.html',{waitUntil:'domcontentloaded'});const card=p.locator('.dish-button').first();await card.waitFor();await p.evaluate(()=>document.fonts.ready);await p.addStyleTag({content:'html{scroll-behavior:auto!important}'});await card.locator('.dish-visual').evaluate(el=>el.scrollIntoView({behavior:'instant',block:'center'}));await card.locator('.dish-visual').hover();await p.waitForFunction(()=>{const img=document.querySelector('.dish-visual img');return img&&Math.abs(new DOMMatrix(getComputedStyle(img).transform).a-1.05)<.0001;},{},{timeout:3000});const scale=await card.locator('.dish-visual img').evaluate(el=>new DOMMatrix(getComputedStyle(el).transform).a);assert(Math.abs(scale-1.05)<.0001);const glow=await card.locator('.dish-visual').evaluate(el=>Number(getComputedStyle(el,'::after').opacity));assert(glow>.99);await card.click();assert.equal(await p.locator('#dish-dialog').isVisible(),true);assert.equal(await p.locator('#dialog-title').innerText(),data.items[0].name);assert.equal(await p.locator('#dialog-history').textContent(),data.items[0].history||'');await p.keyboard.press('Escape');await p.close();
 });
 test('Both entry points initially open grill and retain a selected real category after reload',async()=>{
@@ -138,7 +151,7 @@ test('Both category menus wrap into visible rows without a horizontal scroll are
 });
 test('Gallery navigation and a delayed catalogue align the whole image below the header',async()=>{
  for(const width of [390,1440]){const p=await browser.newPage({viewport:{width,height:950},reducedMotion:'reduce'});await p.goto(base+'index.html',{waitUntil:'domcontentloaded'});await p.locator('.menu-dish').first().waitFor();if(width<921){await p.locator('.mobile-toggle').click();await p.locator('.mobile-menu a[href="#gallery"]').click();}else await p.locator('.nav-left a[href="#gallery"]').click();await p.waitForFunction(()=>{const r=document.querySelector('.gallery-stage').getBoundingClientRect(),header=document.querySelector('.topbar-wrap').getBoundingClientRect();return Math.abs(r.top-header.height-18)<2&&r.bottom<innerHeight;});assert.equal(new URL(p.url()).hash,'#gallery');await p.close();}
- const p=await browser.newPage({viewport:{width:1440,height:950},reducedMotion:'reduce'});await p.route('**/assets/menu.json',async route=>{await new Promise(resolve=>setTimeout(resolve,350));await route.continue();});await p.goto(base+'index.html#gallery',{waitUntil:'domcontentloaded'});await p.locator('.menu-dish').first().waitFor();await p.waitForFunction(()=>Math.abs(document.querySelector('.gallery-stage').getBoundingClientRect().top-document.querySelector('.topbar-wrap').getBoundingClientRect().height-18)<2);await p.close();
+ const p=await browser.newPage({viewport:{width:1440,height:950},reducedMotion:'reduce'});await p.route('**/assets/menu.json*',async route=>{await new Promise(resolve=>setTimeout(resolve,350));await route.continue();});await p.goto(base+'index.html#gallery',{waitUntil:'domcontentloaded'});await p.locator('.menu-dish').first().waitFor();await p.waitForFunction(()=>Math.abs(document.querySelector('.gallery-stage').getBoundingClientRect().top-document.querySelector('.topbar-wrap').getBoundingClientRect().height-18)<2);await p.close();
 });
 test('Unwritten dish descriptions and histories stay absent instead of rendering fallback explanations',async()=>{
  const p=await pageAt('menu.html?category=salads');await p.locator('[data-item-id="salads-02"] .dish-button').click();assert.equal(await p.locator('#dialog-title').innerText(),'Олимпус с говядиной');assert.equal(await p.locator('#dialog-note').isVisible(),false);assert.equal(await p.locator('.dialog-story').isVisible(),false);assert.doesNotMatch(await p.locator('#dish-dialog').innerText(),/нет единого|исходных данных|Описание уточняется|Гастрономическая заметка/);await p.close();

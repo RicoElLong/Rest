@@ -18,6 +18,10 @@
 .menu-catalog .dish-visual{display:block;position:relative;width:100%;aspect-ratio:1.4;overflow:hidden;background:radial-gradient(ellipse at 40% 40%,#3b392c55,transparent 65%),#13221a}
 .menu-catalog .dish-visual img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .45s;position:absolute;inset:0;z-index:1}
 .menu-catalog .dish-placeholder{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:15px;color:#c8b998;font:11px Arial;letter-spacing:.04em}
+.menu-catalog .dish-placeholder.has-category-photo,#dish-dialog .catalog-dialog-placeholder.has-category-photo{background-repeat:no-repeat;background-size:cover;background-position:center;align-items:flex-start;justify-content:flex-end;padding:16px;box-sizing:border-box;isolation:isolate;color:#f2e6d1}
+.has-category-photo:after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 60%,#07130bd9);z-index:-1;pointer-events:none}
+.menu-catalog .has-category-photo .catalog-plate,#dish-dialog .has-category-photo .catalog-plate{display:none}
+.has-category-photo>span:last-child{font:10px/1.4 Arial,sans-serif;letter-spacing:.04em;padding:5px 8px;border-radius:4px;background:#0c1912aa}
 .catalog-plate{display:block;position:relative;width:66px;height:66px;border:1px solid #e6cca166;border-radius:50%;box-shadow:0 0 0 8px #e6cca107,inset 0 0 0 7px #e6cca109}
 .catalog-plate:before{content:'';position:absolute;inset:12px;border:1px solid #e6cca133;border-radius:50%}
 .menu-catalog .dish-detail-hint{position:absolute;right:14px;bottom:14px;width:38px;height:38px;border:1px solid #e6cca155;border-radius:50%;display:grid;place-items:center;background:#0b1812b8;color:#e6cca1;z-index:2}

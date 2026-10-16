@@ -15,6 +15,7 @@
 - Preserve the original automobile silhouette and all header/logo dimensions. `assets/logo-car-clean.svg` uses the exact original PNG alpha channel, losslessly encoded as a small WebP mask, with a render-time noise cleanup filter; it is not a redesigned car. Keep the original PNG as the source.
 
 - Keep catalogue data preloaded and its deferred script independent of GSAP loading. The catalogue must stay usable even if the animation library is delayed. Prefer optimized WebP assets for decorative images.
+- Dish photo placeholders are local category images, explicitly labelled temporary. Keep individual `item.image` empty until real dish photos are supplied; a real image takes precedence automatically. Keep JSON preload and fetch version URLs identical.
 
 - The interactive catalogue appears on both `index.html` (also `/Rest/`) and `menu.html`. Keep its category navigation and dish details consistent on both entry points using the shared `.catalog-editorial` component styles.
 

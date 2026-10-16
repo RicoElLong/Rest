@@ -32,6 +32,16 @@
   document.body.classList.remove('dialog-open');scrollTo({top:saved.y,behavior:'instant'});
  }
  function imageData(item){return typeof item.image==='string'?{src:item.image}:item.image;}
+ function decoratePlaceholder(placeholder,item){
+  const photo=catalog?.categories.find(c=>c.id===item.categoryId)?.placeholderImage;
+  placeholder.classList.toggle('has-category-photo',Boolean(photo?.src));
+  placeholder.style.backgroundImage=photo?.src?`url("${new URL(photo.src,location.href).href}")`:'';
+  placeholder.style.backgroundSize=photo?.size||'';
+  placeholder.style.backgroundPosition=photo?.position||'';
+  placeholder.lastElementChild.textContent=photo?.src?'Временное фото':'Фотография готовится';
+  if(photo?.src){placeholder.setAttribute('role','img');placeholder.setAttribute('aria-label',`${categoryTitle(item.categoryId)} — временная фотография`);}
+  else{placeholder.removeAttribute('role');placeholder.removeAttribute('aria-label');}
+ }
  function attachImage(image,item,onError){
   const data=imageData(item);if(!data?.src)return false;
   image.src=data.src;image.alt=item.imageAlt||item.name;
@@ -78,6 +88,7 @@
   const button=element('button','dish-button');button.type='button';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-controls','dish-dialog');button.setAttribute('aria-label',`${item.name}, ${price(item)}${item.priceVerified?'':', предварительная цена'}. ${refined?'Открыть описание блюда':'Подробнее'}`);
   const visual=element('span','dish-visual');
   const placeholder=element('span','dish-placeholder');placeholder.append(element('span','catalog-plate'),element('span','','Фотография готовится'));placeholder.firstChild.setAttribute('aria-hidden','true');visual.append(placeholder);
+  decoratePlaceholder(placeholder,item);
   const image=new Image();image.loading='lazy';image.width=720;image.height=refined?540:514;image.sizes='(max-width: 359px) 100vw, (max-width: 900px) 50vw, 33vw';
   if(attachImage(image,item,()=>image.remove()))visual.append(image);
   const hint=element('span','dish-detail-hint');hint.setAttribute('aria-hidden','true');hint.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 19 19 5M5 5h14v14"/></svg>';if(!refined)visual.append(hint);
@@ -127,7 +138,8 @@
  async function load(){
   const sequence=++loadSequence;error.hidden=true;grid.setAttribute('aria-busy','true');announce('Загружаем меню…');
   try{
-   const response=await fetch(new URL('menu.json',scriptUrl),{priority:'high'});if(!response.ok)throw Error(`HTTP ${response.status}`);
+   const dataUrl=new URL('menu.json',scriptUrl);dataUrl.search=new URL(scriptUrl).search;
+   const response=await fetch(dataUrl,{priority:'high'});if(!response.ok)throw Error(`HTTP ${response.status}`);
    const data=await response.json();
    if(!Array.isArray(data.items)||!Array.isArray(data.categories)||!data.items.length)throw Error('Invalid catalogue');
    const ids=new Set(data.categories.map(c=>c.id));if(data.items.some(i=>!i.id||!i.name||!ids.has(i.categoryId)))throw Error('Invalid item');
@@ -152,6 +164,7 @@
   if(ingredients)ingredients.textContent=Array.isArray(item.ingredients)&&item.ingredients.length?`Состав: ${item.ingredients.join(', ')}`:'Точный состав и аллергены пока не подтверждены. Уточните у официанта.';
   if(availability)availability.textContent=item.available===true?'Наличие подтверждено.':item.available===false?'Сейчас недоступно.':'Наличие уточняется у ресторана.';
   const image=root.querySelector('#dialog-image'),zoom=root.querySelector('.dialog-zoom'),wrap=root.querySelector('.dialog-image-wrap'),placeholder=root.querySelector('.catalog-dialog-placeholder');
+  decoratePlaceholder(placeholder,item);
   wrap.classList.remove('is-zoomed');zoom.setAttribute('aria-pressed','false');zoom.textContent='Увеличить фото';
   image.removeAttribute('src');image.removeAttribute('srcset');image.hidden=true;zoom.hidden=true;placeholder.hidden=false;
   if(attachImage(image,item,()=>{image.hidden=true;zoom.hidden=true;placeholder.hidden=false;})){image.hidden=false;zoom.hidden=false;placeholder.hidden=true;}
