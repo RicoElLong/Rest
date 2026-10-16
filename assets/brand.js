@@ -9,13 +9,18 @@
   modal.setAttribute('aria-labelledby','promotions-title');
   modal.innerHTML=`<button class="promotions-close" aria-label="Закрыть акции" autofocus>×</button><p class="promotions-eyebrow">Специально для вас</p><h2 id="promotions-title">Акции ресторана</h2><p>Выберите, где вам удобно узнавать о новых предложениях.</p><div class="promotions-options"><button data-messenger="Telegram">Telegram <span>↗</span></button><button data-messenger="MAX">MAX <span>↗</span></button></div><p class="promotions-status" role="status" aria-live="polite">Демонстрационный режим — подписка не оформляется.</p>`;
   document.body.append(modal);
-  trigger.addEventListener('click',()=>{
+  let opener=trigger;
+  [trigger,...document.querySelectorAll('[data-open-promotions]')].forEach(control=>{
+   control.addEventListener('click',event=>{
+    event.preventDefault();if(modal.open)return;opener=control;
     modal.querySelector('.promotions-status').textContent='Демонстрационный режим — подписка не оформляется.';
     modal.querySelectorAll('[data-messenger]').forEach(button=>button.setAttribute('aria-pressed','false'));
     modal.showModal();
     if(window.gsap&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       gsap.fromTo(modal,{opacity:0,y:18},{opacity:1,y:0,duration:.35,ease:'power2.out'});
     }
+   });
+   if(control.matches('[role=button]'))control.addEventListener('keydown',event=>{if(event.key===' '){event.preventDefault();control.click();}});
   });
   modal.querySelector('.promotions-close').addEventListener('click',()=>modal.close());
   modal.addEventListener('click',event=>{
@@ -25,7 +30,7 @@
     modal.querySelectorAll('[data-messenger]').forEach(item=>item.setAttribute('aria-pressed',String(item===button)));
     modal.querySelector('.promotions-status').textContent=`Вы выбрали ${button.dataset.messenger}. Это демонстрация: переход и подписка пока не подключены.`;
   });
-  modal.addEventListener('close',()=>{window.gsap?.killTweensOf(modal);trigger.focus({preventScroll:true})});
+  modal.addEventListener('close',()=>{window.gsap?.killTweensOf(modal);(opener.getClientRects().length?opener:document.querySelector('.mobile-toggle')||trigger).focus({preventScroll:true})});
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   let timer;
   function flicker(){
