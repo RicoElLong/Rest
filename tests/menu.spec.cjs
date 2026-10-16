@@ -158,12 +158,13 @@ test('Gallery navigation and a delayed catalogue align the whole image below the
 test('Unwritten dish descriptions and histories stay absent instead of rendering fallback explanations',async()=>{
  const p=await pageAt('menu.html?category=salads');await p.locator('[data-item-id="salads-02"] .dish-button').click();assert.equal(await p.locator('#dialog-title').innerText(),'Олимпус с говядиной');assert.equal(await p.locator('#dialog-note').isVisible(),false);assert.equal(await p.locator('.dialog-story').isVisible(),false);assert.doesNotMatch(await p.locator('#dish-dialog').innerText(),/нет единого|исходных данных|Описание уточняется|Гастрономическая заметка/);await p.close();
 });
-test('Phone and tablet layouts keep compact tiles, readable controls and benefits in normal flow',async()=>{
+test('Phone and tablet layouts stack chooser tiles in order with readable controls and benefits in normal flow',async()=>{
  for(const entry of ['index.html','menu.html'])for(const width of [320,360,390,430,640,768,920]){
   const p=await pageAt(entry,{viewport:{width,height:844},isMobile:true,hasTouch:true});await p.evaluate(()=>document.fonts.ready);
   assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   const tiles=await p.locator('.menu-panels').evaluate(el=>{const frame=el.getBoundingClientRect();return {height:frame.height,columns:getComputedStyle(el).gridTemplateColumns.split(' ').length,inside:[...el.querySelectorAll('.menu-panel')].every(panel=>{const r=panel.getBoundingClientRect(),t=panel.querySelector('.panel-title').getBoundingClientRect();return r.left>=frame.left-1&&r.right<=frame.right+1&&t.left>=r.left&&t.right<=r.right&&t.bottom<=r.bottom;})};});
-  assert.equal(tiles.columns,2,`${entry} ${width}`);assert(tiles.height<=360);assert.equal(tiles.inside,true,`${entry} ${width}`);
+  assert.equal(tiles.columns,1,`${entry} ${width}`);assert(tiles.height<=720);assert.equal(tiles.inside,true,`${entry} ${width}`);
+  assert.deepEqual(await p.locator('.menu-panel').evaluateAll(nodes=>nodes.map(el=>el.dataset.section)),['kitchen','grill','bar','booking']);assert.equal(await p.locator('.menu-panel').evaluateAll(nodes=>nodes.every((el,i)=>i===0||el.getBoundingClientRect().top>=nodes[i-1].getBoundingClientRect().bottom)),true);
   await p.waitForFunction(()=>[...document.querySelectorAll('.menu-panel img')].every(img=>img.complete&&img.naturalWidth>0));
   for(const selector of ['#dish-search','#dish-sort'])assert((await p.locator(selector).evaluate(el=>parseFloat(getComputedStyle(el).fontSize)))>=16);
   const header=p.locator(entry==='index.html'?'.topbar-wrap':'.menu-header'),toggle=header.locator('button[aria-controls]').first();const logo=await header.locator('.brand-center').boundingBox(),control=await toggle.boundingBox();assert(logo.x+logo.width<=control.x-4);assert(control.width>=44&&control.height>=44);
