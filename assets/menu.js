@@ -1,75 +1,191 @@
 (() => {
-  const root=document.querySelector('[data-menu-app]')||document;
-  const panels=[...root.querySelectorAll('.menu-panel')];
-  const section=root.querySelector('#selected-menu');
-  const heading=root.querySelector('#selection-heading');
-  const grid=root.querySelector('#dish-grid');
-  const filters=[...root.querySelectorAll('[data-filter]')];
-  const search=root.querySelector('#dish-search');
-  const empty=root.querySelector('.empty-state');
-  const status=root.querySelector('#menu-status');
-  const dialog=root.querySelector('#dish-dialog');
-  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
-  let selected='',filter='all',opener=null;
-  const titles={kitchen:'Меню кухни',grill:'На гриле',bar:'Бар',booking:'Бронирование зала'};
-  const belongs=(item)=>selected==='kitchen'?item.tags.some(t=>['snack','salad','hot'].includes(t)):item.tags.includes(selected);
-  function imageState(image){image.addEventListener('error',()=>image.classList.add('is-unavailable'));image.addEventListener('load',()=>image.classList.remove('is-unavailable'));if(image.complete&&!image.naturalWidth)image.classList.add('is-unavailable')}
-  root.querySelectorAll('.panel-photo').forEach(imageState);
-  function render(){
-    const query=search.value.trim().toLocaleLowerCase('ru');
-    const items=menuItems.filter(item=>belongs(item)&&(filter==='all'||item.tags.includes(filter))&&`${item.name} ${item.note}`.toLocaleLowerCase('ru').includes(query));
-    grid.replaceChildren();
-    items.forEach((item,index)=>{
-      const article=document.createElement('article');article.className='menu-dish';article.style.setProperty('--order',index);
-      const button=document.createElement('button');button.className='dish-button';button.setAttribute('aria-label',`${item.name}, ${item.price}. Подробнее`);
-      const visual=document.createElement('span');visual.className='dish-visual';
-      const fallback=document.createElement('span');fallback.className='dish-fallback';fallback.textContent='Дети';fallback.setAttribute('aria-hidden','true');visual.append(fallback);
-      if(item.image){const image=new Image();image.alt='';image.loading='lazy';imageState(image);image.src=item.image;visual.append(image)}
-      const hint=document.createElement('span');hint.className='dish-detail-hint';hint.innerHTML='<svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg>';hint.setAttribute('aria-hidden','true');visual.append(hint);
-      const name=document.createElement('span');name.className='dish-name';name.textContent=item.name;
-      const meta=document.createElement('span');meta.className='dish-meta';const note=document.createElement('span');note.textContent=item.note;const price=document.createElement('span');price.className='dish-price';price.textContent=item.price;meta.append(note,price);
-      button.append(visual,name,meta);button.addEventListener('click',()=>openDish(item,button));article.append(button);grid.append(article);
-    });
-    empty.hidden=items.length>0;status.textContent=`Найдено блюд: ${items.length}`;
-  }
-  const bookingDialog=root.querySelector('#booking-dialog');
-  let bookingOpener;
-  let selectionScrollFrame;
-  function openBooking(){cancelAnimationFrame(selectionScrollFrame);window.scrollTo({top:window.scrollY,behavior:'instant'});bookingBackdropPressed=false;bookingOpener=panels.find(p=>p.dataset.section==='booking');bookingOpener.setAttribute('aria-expanded','true');bookingDialog.showModal();document.body.classList.add('dialog-open')}
-  root.querySelector('.booking-close').addEventListener('click',()=>bookingDialog.close());
-  bookingDialog.addEventListener('close',()=>{document.body.classList.remove('dialog-open');bookingOpener?.setAttribute('aria-expanded','false');bookingOpener?.focus({preventScroll:true})});
-  let bookingBackdropPressed=false;
-  bookingDialog.addEventListener('pointerdown',event=>{const r=bookingDialog.getBoundingClientRect();bookingBackdropPressed=event.target===bookingDialog&&(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)});
-  bookingDialog.addEventListener('click',()=>{if(bookingBackdropPressed)bookingDialog.close();bookingBackdropPressed=false});
-  function select(key,scroll=true,updateUrl=true){
-    if(key==='booking'){openBooking();return}
-    selected=key;filter='all';search.value='';
-    panels.forEach(p=>{const active=p.dataset.section===key;p.classList.toggle('is-selected',active);p.setAttribute('aria-expanded',String(active))});
-    filters.forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.filter==='all')));
-    root.querySelector('.dish-filters').hidden=key!=='kitchen';heading.textContent=titles[key];section.hidden=false;render();
-    if(updateUrl)history.replaceState(null,'',`#${key}`);
-    if(scroll){selectionScrollFrame=requestAnimationFrame(()=>{section.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});heading.focus({preventScroll:true})})}
-  }
-  panels.forEach(p=>p.addEventListener('click',()=>select(p.dataset.section)));
-  root.querySelector('.close-selection').addEventListener('click',()=>{const previous=panels.find(p=>p.dataset.section===selected);section.hidden=true;panels.forEach(p=>{p.classList.remove('is-selected');p.setAttribute('aria-expanded','false')});selected='';history.replaceState(null,'',location.pathname+location.search);previous?.focus({preventScroll:true});previous?.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'center'})});
-  filters.forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;filters.forEach(f=>f.setAttribute('aria-pressed',String(f===b)));render()}));
-  search.addEventListener('input',render);
-  function openDish(item,button){
-    opener=button;root.querySelector('#dialog-title').textContent=item.name;root.querySelector('#dialog-note').textContent=item.note;root.querySelector('#dialog-price').textContent=item.price;
-    const image=root.querySelector('#dialog-image');image.classList.remove('is-unavailable');image.hidden=!item.image;image.alt=item.name;if(item.image)image.src=item.image;else image.removeAttribute('src');
-    dialog.showModal();document.body.classList.add('dialog-open');
-  }
-  imageState(root.querySelector('#dialog-image'));
-  root.querySelector('.dialog-close').addEventListener('click',()=>dialog.close());
-  dialog.addEventListener('click',event=>{const r=dialog.getBoundingClientRect();if(event.target===dialog&&(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom))dialog.close()});
-  dialog.addEventListener('close',()=>{document.body.classList.remove('dialog-open');opener?.focus({preventScroll:true})});
-  const toggle=root.querySelector('.nav-toggle'),nav=root.querySelector('#mobile-nav');
-  function closeNav(){if(!nav||!toggle)return;nav.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.textContent='☰';toggle.setAttribute('aria-label','Открыть навигацию')}
-  toggle?.addEventListener('click',()=>{const open=nav.hidden;nav.hidden=!open;toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'×':'☰';toggle.setAttribute('aria-label',open?'Закрыть навигацию':'Открыть навигацию')});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&nav&&!nav.hidden){closeNav();toggle.focus()}});
-  window.matchMedia('(min-width: 901px)').addEventListener('change',e=>{if(e.matches)closeNav()});
-  const header=document.querySelector('.menu-header');const updateHeader=()=>header?.classList.toggle('is-scrolled',scrollY>16);window.addEventListener('scroll',updateHeader,{passive:true});updateHeader();
-  const initialAnchor=location.hash.slice(1);
-  if(titles[initialAnchor])history.replaceState(null,'',location.pathname+location.search);
-  select('kitchen',false,false);
+ 'use strict';
+ const scriptUrl=document.currentScript.src;
+ const root=document.querySelector('[data-menu-app]')||document;
+ const section=root.querySelector('#selected-menu');
+ if(!section)return;
+ const grid=root.querySelector('#dish-grid'),heading=root.querySelector('#selection-heading');
+ const search=root.querySelector('#dish-search'),sort=root.querySelector('#dish-sort');
+ const filters=root.querySelector('.catalog-categories'),status=root.querySelector('#menu-status');
+ const empty=root.querySelector('.empty-state'),error=root.querySelector('.catalog-error');
+ const panels=[...root.querySelectorAll('.menu-panel')];
+ const dialog=root.querySelector('#dish-dialog'),booking=root.querySelector('#booking-dialog');
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ const number=new Intl.NumberFormat('ru-RU');
+ let catalog=null,category='all',opener=null,selected='kitchen',scrollFrame,searchTimer;
+ let bodySnapshot=null,dialogAnimation=null,loadSequence=0;
+ const categoryTitle=id=>catalog?.categories.find(c=>c.id===id)?.title||'Все блюда';
+ const price=item=>Number.isFinite(item.priceRub)?`${number.format(item.priceRub)} ₽`:'Цена уточняется';
+ const normalize=value=>String(value||'').toLocaleLowerCase('ru').replace(/ё/g,'е').normalize('NFC');
+ function element(tag,className,text){const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=text;return el;}
+ function motion(target,vars){if(window.gsap&&!reduced.matches)return gsap.fromTo(target,{opacity:0,y:14},{opacity:1,y:0,duration:.35,ease:'power2.out',...vars});return null;}
+ function announce(text){status.textContent=text;}
+ function lockBody(){
+  if(bodySnapshot)return;
+  bodySnapshot={y:scrollY,position:document.body.style.position,top:document.body.style.top,width:document.body.style.width,overflow:document.body.style.overflow};
+  document.body.style.position='fixed';document.body.style.top=`-${bodySnapshot.y}px`;document.body.style.width='100%';document.body.style.overflow='hidden';document.body.classList.add('dialog-open');
+ }
+ function unlockBody(){
+  if(!bodySnapshot)return;
+  const saved=bodySnapshot;bodySnapshot=null;
+  for(const key of ['position','top','width','overflow'])document.body.style[key]=saved[key];
+  document.body.classList.remove('dialog-open');scrollTo({top:saved.y,behavior:'instant'});
+ }
+ function imageData(item){return typeof item.image==='string'?{src:item.image}:item.image;}
+ function attachImage(image,item,onError){
+  const data=imageData(item);if(!data?.src)return false;
+  image.src=data.src;image.alt=item.imageAlt||item.name;
+  if(data.srcSet)image.srcset=data.srcSet;
+  if(data.sizes)image.sizes=data.sizes;
+  image.decoding='async';image.addEventListener('error',onError,{once:true});return true;
+ }
+ function syncPanels(){panels.forEach(panel=>{const active=panel.dataset.section===selected;panel.classList.toggle('is-selected',active);panel.setAttribute('aria-expanded',String(active));});}
+ function syncCategories(){
+  filters.querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.category===category)));
+  heading.textContent=category==='all'?'Меню ресторана':categoryTitle(category);
+ }
+ function saveUrl(push=false){
+  const url=new URL(location.href);
+  if(category==='all')url.searchParams.delete('category');else url.searchParams.set('category',category);
+  const query=search.value.trim();if(query)url.searchParams.set('q',query);else url.searchParams.delete('q');
+  if(sort.value==='menu')url.searchParams.delete('sort');else url.searchParams.set('sort',sort.value);
+  history[push?'pushState':'replaceState'](null,'',url);
+ }
+ function buildCategories(){
+  filters.replaceChildren();
+  [{id:'all',title:'Все блюда'},...catalog.categories].forEach(cat=>{
+   const count=cat.id==='all'?catalog.items.length:catalog.items.filter(i=>i.categoryId===cat.id).length;
+   const button=element('button','',cat.title);button.type='button';button.dataset.category=cat.id;button.setAttribute('aria-controls','dish-grid');
+   const badge=element('span','',String(count));badge.setAttribute('aria-hidden','true');button.append(badge);
+   button.addEventListener('click',()=>{category=cat.id;selected=category==='grill'?'grill':category==='desserts-drinks'?'bar':'kitchen';syncPanels();syncCategories();render();saveUrl(true);button.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'nearest',inline:'nearest'});});
+   filters.append(button);
+  });
+ }
+ function addHold(button,item){
+  let timer=null,point=null,consumed=false;
+  function cancel(){clearTimeout(timer);timer=null;point=null;button.classList.remove('is-holding');}
+  button.addEventListener('pointerdown',event=>{
+   if(event.pointerType!=='mouse'||event.button!==0)return;
+   consumed=false;point={x:event.clientX,y:event.clientY};button.classList.add('is-holding');
+   timer=setTimeout(()=>{timer=null;point=null;consumed=true;button.classList.remove('is-holding');openDish(item,button);},650);
+  });
+  button.addEventListener('pointermove',event=>{if(point&&Math.hypot(event.clientX-point.x,event.clientY-point.y)>10)cancel();});
+  for(const type of ['pointerup','pointercancel','pointerleave','lostpointercapture'])button.addEventListener(type,cancel);
+  button.addEventListener('blur',cancel);button.addEventListener('dragstart',event=>{event.preventDefault();cancel();});
+  button.addEventListener('click',event=>{if(consumed){consumed=false;event.preventDefault();return;}openDish(item,button);});
+ }
+ function card(item){
+  const article=element('article','menu-dish');article.dataset.itemId=item.id;
+  const button=element('button','dish-button');button.type='button';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-controls','dish-dialog');button.setAttribute('aria-label',`${item.name}, ${price(item)}${item.priceVerified?'':', предварительная цена'}. Подробнее`);
+  const visual=element('span','dish-visual');
+  const placeholder=element('span','dish-placeholder');placeholder.append(element('span','catalog-plate'),element('span','','Фотография готовится'));placeholder.firstChild.setAttribute('aria-hidden','true');visual.append(placeholder);
+  const image=new Image();image.loading='lazy';image.width=720;image.height=514;image.sizes='(max-width: 359px) 100vw, (max-width: 900px) 50vw, 33vw';
+  if(attachImage(image,item,()=>image.remove()))visual.append(image);
+  const hint=element('span','dish-detail-hint');hint.setAttribute('aria-hidden','true');hint.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 19 19 5M5 5h14v14"/></svg>';visual.append(hint);
+  const ring=document.createElementNS('http://www.w3.org/2000/svg','svg');ring.classList.add('hold-ring');ring.setAttribute('viewBox','0 0 40 40');ring.setAttribute('aria-hidden','true');ring.innerHTML='<circle cx="20" cy="20" r="16" pathLength="100"/>';visual.append(ring);
+  const body=element('span','dish-body');body.append(element('span','dish-category',categoryTitle(item.categoryId)),element('span','dish-name',item.name));
+  const meta=element('span','dish-meta'),priceWrap=element('span','');priceWrap.append(element('span','dish-price',price(item)),element('span','dish-price-note',item.priceVerified?'Цена подтверждена':'Предварительная цена'));
+  meta.append(priceWrap,element('span','dish-more','Подробнее →'));body.append(meta);button.append(visual,body);article.append(button);addHold(button,item);return article;
+ }
+ function render(animate=true){
+  if(!catalog)return;
+  const query=normalize(search.value.trim());
+  let items=catalog.items.filter(item=>(category==='all'||item.categoryId===category)&&normalize(`${item.name} ${categoryTitle(item.categoryId)} ${item.description||''}`).includes(query));
+  if(sort.value==='price-asc')items.sort((a,b)=>(a.priceRub??Infinity)-(b.priceRub??Infinity));
+  if(sort.value==='price-desc')items.sort((a,b)=>(b.priceRub??-Infinity)-(a.priceRub??-Infinity));
+  if(sort.value==='name')items.sort((a,b)=>a.name.localeCompare(b.name,'ru'));
+  if(window.gsap)gsap.killTweensOf([...grid.children]);
+  grid.replaceChildren(...items.map(card));grid.setAttribute('aria-busy','false');empty.hidden=items.length>0;
+  announce(`${categoryTitle(category)} · показано ${items.length} из ${catalog.items.length}${search.value.trim()?` · поиск: «${search.value.trim()}»`:''}`);
+  if(animate)motion([...grid.children],{stagger:.018,duration:.32});
+ }
+ function choose(key,scroll=true){
+  if(key==='booking'){openBooking();return;}
+  selected=key;category=key==='grill'?'grill':key==='bar'?'desserts-drinks':'all';search.value='';sort.value='menu';
+  section.hidden=false;syncPanels();syncCategories();render();saveUrl(true);
+  if(scroll){cancelAnimationFrame(scrollFrame);scrollFrame=requestAnimationFrame(()=>{section.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'start'});heading.focus({preventScroll:true});});}
+ }
+ panels.forEach(panel=>panel.addEventListener('click',()=>choose(panel.dataset.section)));
+ root.querySelector('.close-selection').addEventListener('click',()=>{
+  const previous=panels.find(p=>p.dataset.section===selected);section.hidden=true;selected='';syncPanels();
+  const url=new URL(location.href);for(const key of ['category','q','sort'])url.searchParams.delete(key);if(url.hash==='#selected-menu')url.hash='menu';history.replaceState(null,'',url);
+  previous?.focus({preventScroll:true});previous?.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'center'});
+ });
+ search.addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>{render();saveUrl();},120);});
+ sort.addEventListener('change',()=>{render();saveUrl();});
+ root.querySelector('.catalog-reset').addEventListener('click',()=>{category='all';selected='kitchen';search.value='';sort.value='menu';syncPanels();syncCategories();render();saveUrl(true);search.focus({preventScroll:true});});
+ function readUrl(){
+  if(!catalog)return;
+  const url=new URL(location.href),value=url.searchParams.get('category');
+  const legacy=url.hash.slice(1);category=catalog.categories.some(c=>c.id===value)?value:legacy==='grill'?'grill':legacy==='bar'?'desserts-drinks':'all';
+  search.value=(url.searchParams.get('q')||'').slice(0,160);sort.value=['price-asc','price-desc','name'].includes(url.searchParams.get('sort'))?url.searchParams.get('sort'):'menu';
+  selected=category==='grill'?'grill':category==='desserts-drinks'?'bar':'kitchen';section.hidden=false;syncPanels();syncCategories();render(false);
+ }
+ addEventListener('popstate',readUrl);
+ async function load(){
+  const sequence=++loadSequence;error.hidden=true;grid.setAttribute('aria-busy','true');announce('Загружаем меню…');
+  try{
+   const response=await fetch(new URL('menu.json',scriptUrl));if(!response.ok)throw Error(`HTTP ${response.status}`);
+   const data=await response.json();
+   if(!Array.isArray(data.items)||!Array.isArray(data.categories)||!data.items.length)throw Error('Invalid catalogue');
+   const ids=new Set(data.categories.map(c=>c.id));if(data.items.some(i=>!i.id||!i.name||!ids.has(i.categoryId)))throw Error('Invalid item');
+   if(sequence!==loadSequence)return;
+   catalog=data;catalog.categories.sort((a,b)=>a.order-b.order);buildCategories();readUrl();
+   if(new URL(location.href).hash==='#selected-menu')section.scrollIntoView({behavior:'instant',block:'start'});
+  }catch(err){if(sequence!==loadSequence)return;error.hidden=false;grid.setAttribute('aria-busy','false');announce('Меню пока недоступно. Повторите загрузку.');}
+ }
+ root.querySelector('.catalog-retry').addEventListener('click',load);
+ function openDish(item,button){
+  if(dialog.open)return;
+  cancelAnimationFrame(scrollFrame);opener=button;
+  root.querySelector('#dialog-title').textContent=item.name;root.querySelector('#dialog-category').textContent=categoryTitle(item.categoryId);
+  root.querySelector('#dialog-note').textContent=item.description||'Описание уточняется у ресторана.';
+  root.querySelector('#dialog-history').textContent=item.history||'Гастрономическая заметка готовится.';
+  root.querySelector('#dialog-price').textContent=price(item);
+  root.querySelector('#dialog-price-status').textContent=item.priceVerified?'Цена подтверждена.':'Предварительная цена. Подтвердите перед заказом.';
+  const weight=root.querySelector('#dialog-weight');weight.hidden=!Number.isFinite(item.weightGrams);weight.textContent=weight.hidden?'':`Выход порции: ${number.format(item.weightGrams)} г`;
+  root.querySelector('#dialog-ingredients').textContent=Array.isArray(item.ingredients)&&item.ingredients.length?`Состав: ${item.ingredients.join(', ')}`:'Точный состав и аллергены пока не подтверждены. Уточните у официанта.';
+  root.querySelector('#dialog-availability').textContent=item.available===true?'Наличие подтверждено.':item.available===false?'Сейчас недоступно.':'Наличие уточняется у ресторана.';
+  const image=root.querySelector('#dialog-image'),zoom=root.querySelector('.dialog-zoom'),wrap=root.querySelector('.dialog-image-wrap'),placeholder=root.querySelector('.catalog-dialog-placeholder');
+  wrap.classList.remove('is-zoomed');zoom.setAttribute('aria-pressed','false');zoom.textContent='Увеличить фото';
+  image.removeAttribute('src');image.removeAttribute('srcset');image.hidden=true;zoom.hidden=true;placeholder.hidden=false;
+  if(attachImage(image,item,()=>{image.hidden=true;zoom.hidden=true;placeholder.hidden=false;})){image.hidden=false;zoom.hidden=false;placeholder.hidden=true;}
+  dialog.showModal();dialog.scrollTop=0;lockBody();dialogAnimation?.kill();dialogAnimation=motion(dialog,{duration:.35});
+ }
+ dialog.addEventListener('keydown',event=>{
+  if(event.key!=='Tab')return;
+  const focusable=[...dialog.querySelectorAll('button,a[href],input,select,textarea,[tabindex]')].filter(el=>!el.disabled&&el.tabIndex>=0&&el.getClientRects().length>0);
+  if(!focusable.length){event.preventDefault();dialog.focus();return;}
+  const first=focusable[0],last=focusable.at(-1),active=document.activeElement;
+  if(event.shiftKey&&(active===first||!focusable.includes(active))){event.preventDefault();last.focus();}
+  else if(!event.shiftKey&&(active===last||!focusable.includes(active))){event.preventDefault();first.focus();}
+ });
+ root.querySelector('.dialog-close').addEventListener('click',()=>dialog.close());
+ root.querySelector('.dialog-zoom').addEventListener('click',event=>{const zoomed=root.querySelector('.dialog-image-wrap').classList.toggle('is-zoomed');event.currentTarget.setAttribute('aria-pressed',String(zoomed));event.currentTarget.textContent=zoomed?'Уменьшить фото':'Увеличить фото';});
+ dialog.addEventListener('close',()=>{dialogAnimation?.kill();dialog.style.opacity='';dialog.style.transform='';unlockBody();opener?.focus({preventScroll:true});});
+ let backdropDown=false;
+ dialog.addEventListener('pointerdown',event=>{const r=dialog.getBoundingClientRect();backdropDown=event.target===dialog&&(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom);});
+ dialog.addEventListener('click',()=>{if(backdropDown)dialog.close();backdropDown=false;});
+ // Swipe is limited to the dedicated handle; scrolling the recipe stays native.
+ const handle=root.querySelector('.dialog-drag-handle');let drag=null;
+ handle.addEventListener('pointerdown',event=>{if(dialog.scrollTop===0){drag={id:event.pointerId,y:event.clientY};handle.setPointerCapture(event.pointerId);}});
+ handle.addEventListener('pointerup',event=>{if(drag&&drag.id===event.pointerId){if(event.clientY-drag.y>70)dialog.close();drag=null;}});
+ handle.addEventListener('pointercancel',()=>drag=null);
+ function openBooking(){
+  cancelAnimationFrame(scrollFrame);opener=panels.find(p=>p.dataset.section==='booking');opener?.setAttribute('aria-expanded','true');booking.showModal();lockBody();
+ }
+ root.querySelector('.booking-close').addEventListener('click',()=>booking.close());
+ booking.addEventListener('close',()=>{unlockBody();opener?.setAttribute('aria-expanded','false');opener?.focus({preventScroll:true});});
+ let bookingBackdrop=false;
+ booking.addEventListener('pointerdown',event=>{const r=booking.getBoundingClientRect();bookingBackdrop=event.target===booking&&(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom);});
+ booking.addEventListener('click',()=>{if(bookingBackdrop)booking.close();bookingBackdrop=false;});
+ const toggle=root.querySelector('.nav-toggle'),nav=root.querySelector('#mobile-nav');
+ function closeNav(){if(!nav||!toggle)return;nav.hidden=true;toggle.setAttribute('aria-expanded','false');toggle.textContent='☰';toggle.setAttribute('aria-label','Открыть навигацию');}
+ toggle?.addEventListener('click',()=>{const open=nav.hidden;nav.hidden=!open;toggle.setAttribute('aria-expanded',String(open));toggle.textContent=open?'×':'☰';toggle.setAttribute('aria-label',open?'Закрыть навигацию':'Открыть навигацию');});
+ nav?.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeNav));
+ document.addEventListener('keydown',event=>{if(event.key==='Escape'&&nav&&!nav.hidden){closeNav();toggle?.focus();}});
+ matchMedia('(min-width: 1151px)').addEventListener('change',event=>{if(event.matches)closeNav();});
+ const header=document.querySelector('.menu-header');const updateHeader=()=>header?.classList.toggle('is-scrolled',scrollY>16);addEventListener('scroll',updateHeader,{passive:true});updateHeader();
+ reduced.addEventListener('change',()=>{if(reduced.matches){dialogAnimation?.kill();if(window.gsap)gsap.set([...grid.children,dialog],{clearProps:'opacity,transform'});}});
+ section.hidden=false;load();
 })();
