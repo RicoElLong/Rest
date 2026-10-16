@@ -1,0 +1,26 @@
+/* Premium dish cards, enabled only by menu.html's data-card-style. */
+.menu-page .menu-catalog[data-card-style=editorial] .dish-grid{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:32px;row-gap:40px;padding-top:18px}
+.menu-page .menu-catalog[data-card-style=editorial] .menu-dish{border:0;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
+.menu-page .menu-catalog[data-card-style=editorial] .dish-button{border:0;border-radius:0;background:transparent}
+.menu-page .menu-catalog[data-card-style=editorial] .dish-visual{aspect-ratio:4/3;border:0;border-radius:4px;background:radial-gradient(ellipse at 45% 40%,#4a46332b,transparent 70%),#14231a;isolation:isolate;box-shadow:0 8px 28px #0002;transition:box-shadow .45s ease}
+.menu-page .menu-catalog[data-card-style=editorial] .dish-visual:after{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse at 50% 85%,#e6cca114,transparent 75%);box-shadow:inset 0 0 30px #e6cca10a;opacity:0;transition:opacity .45s ease}
+.menu-page .menu-catalog[data-card-style=editorial] .dish-visual img{object-fit:cover;transition:transform .55s cubic-bezier(.22,.65,.3,1)}
+.menu-page .menu-catalog[data-card-style=editorial] .dish-placeholder{gap:20px;color:#b5a482;font:10px/1.5 Arial,sans-serif;letter-spacing:.07em;transition:transform .55s ease}
+.menu-page .menu-catalog[data-card-style=editorial] .catalog-plate{border-color:#e6cca144;box-shadow:0 0 0 10px #e6cca104,inset 0 0 0 8px #e6cca106}
+.menu-page .menu-catalog[data-card-style=editorial] .dish-body{padding:21px 0 5px;gap:13px}
+.menu-page .menu-catalog[data-card-style=editorial] .dish-name{min-height:2.5em;font:normal clamp(25px,2.1vw,32px)/1.25 Georgia,'Times New Roman',serif;letter-spacing:-.018em;color:#f1e7d2;overflow-wrap:break-word}
+.menu-page .menu-catalog[data-card-style=editorial] .dish-meta{margin-top:auto;display:block}
+.menu-page .menu-catalog[data-card-style=editorial] .dish-price{font:normal 22px/1.3 Georgia,'Times New Roman',serif;font-variant-numeric:tabular-nums;letter-spacing:.015em;color:#d8b879}
+.menu-page .menu-catalog[data-card-style=editorial] .hold-ring{left:18px;bottom:18px}
+.menu-page .menu-catalog[data-card-style=editorial] .dish-button:focus-visible{outline:1px solid #d8b879;outline-offset:7px}
+@media(hover:hover){
+ .menu-page .menu-catalog[data-card-style=editorial] .menu-dish:hover{border:0;box-shadow:none}
+ .menu-page .menu-catalog[data-card-style=editorial] .dish-button:hover .dish-visual{box-shadow:0 10px 36px #d5ad641f}
+ .menu-page .menu-catalog[data-card-style=editorial] .dish-button:hover .dish-visual img,.menu-page .menu-catalog[data-card-style=editorial] .dish-button:hover .dish-placeholder{transform:scale(1.05)}
+ .menu-page .menu-catalog[data-card-style=editorial] .dish-button:hover .dish-visual:after{opacity:1}
+ .menu-page .menu-catalog[data-card-style=editorial] .dish-button:hover .catalog-plate{box-shadow:0 0 0 10px #e6cca108,inset 0 0 0 8px #e6cca106}
+}
+@media(max-width:900px){.menu-page .menu-catalog[data-card-style=editorial] .dish-grid{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:24px;row-gap:32px}.menu-page .menu-catalog[data-card-style=editorial] .dish-name{font-size:27px}}
+@media(max-width:640px){.menu-page .menu-catalog[data-card-style=editorial] .dish-grid{column-gap:18px;row-gap:30px}.menu-page .menu-catalog[data-card-style=editorial] .dish-body{padding-top:16px;gap:11px}.menu-page .menu-catalog[data-card-style=editorial] .dish-name{font-size:23px}.menu-page .menu-catalog[data-card-style=editorial] .dish-price{font-size:20px}.menu-page .menu-catalog[data-card-style=editorial] .dish-placeholder{font-size:9px;gap:16px}}
+@media(max-width:479px){.menu-page .menu-catalog[data-card-style=editorial] .dish-grid{grid-template-columns:1fr;row-gap:34px}.menu-page .menu-catalog[data-card-style=editorial] .dish-name{font-size:29px;min-height:0}.menu-page .menu-catalog[data-card-style=editorial] .dish-body{padding-top:18px;gap:11px}.menu-page .menu-catalog[data-card-style=editorial] .dish-price{font-size:22px}.menu-page .menu-catalog[data-card-style=editorial] .catalog-plate{width:64px;height:64px}.menu-page .menu-catalog[data-card-style=editorial] .dish-placeholder{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.menu-page .menu-catalog[data-card-style=editorial] .dish-visual,.menu-page .menu-catalog[data-card-style=editorial] .dish-visual:after,.menu-page .menu-catalog[data-card-style=editorial] .dish-visual img,.menu-page .menu-catalog[data-card-style=editorial] .dish-placeholder{transition:none}.menu-page .menu-catalog[data-card-style=editorial] .dish-button:hover .dish-visual img,.menu-page .menu-catalog[data-card-style=editorial] .dish-button:hover .dish-placeholder{transform:none}}

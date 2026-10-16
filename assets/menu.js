@@ -75,17 +75,18 @@
   button.addEventListener('click',event=>{if(consumed){consumed=false;event.preventDefault();return;}openDish(item,button);});
  }
  function card(item){
+  const refined=section.dataset.cardStyle==='editorial';
   const article=element('article','menu-dish');article.dataset.itemId=item.id;
-  const button=element('button','dish-button');button.type='button';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-controls','dish-dialog');button.setAttribute('aria-label',`${item.name}, ${price(item)}${item.priceVerified?'':', предварительная цена'}. Подробнее`);
+  const button=element('button','dish-button');button.type='button';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-controls','dish-dialog');button.setAttribute('aria-label',`${item.name}, ${price(item)}${item.priceVerified?'':', предварительная цена'}. ${refined?'Открыть описание блюда':'Подробнее'}`);
   const visual=element('span','dish-visual');
   const placeholder=element('span','dish-placeholder');placeholder.append(element('span','catalog-plate'),element('span','','Фотография готовится'));placeholder.firstChild.setAttribute('aria-hidden','true');visual.append(placeholder);
-  const image=new Image();image.loading='lazy';image.width=720;image.height=514;image.sizes='(max-width: 359px) 100vw, (max-width: 900px) 50vw, 33vw';
+  const image=new Image();image.loading='lazy';image.width=720;image.height=refined?540:514;image.sizes='(max-width: 359px) 100vw, (max-width: 900px) 50vw, 33vw';
   if(attachImage(image,item,()=>image.remove()))visual.append(image);
-  const hint=element('span','dish-detail-hint');hint.setAttribute('aria-hidden','true');hint.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 19 19 5M5 5h14v14"/></svg>';visual.append(hint);
+  const hint=element('span','dish-detail-hint');hint.setAttribute('aria-hidden','true');hint.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 19 19 5M5 5h14v14"/></svg>';if(!refined)visual.append(hint);
   const ring=document.createElementNS('http://www.w3.org/2000/svg','svg');ring.classList.add('hold-ring');ring.setAttribute('viewBox','0 0 40 40');ring.setAttribute('aria-hidden','true');ring.innerHTML='<circle cx="20" cy="20" r="16" pathLength="100"/>';visual.append(ring);
-  const body=element('span','dish-body');body.append(element('span','dish-category',categoryTitle(item.categoryId)),element('span','dish-name',item.name));
-  const meta=element('span','dish-meta'),priceWrap=element('span','');priceWrap.append(element('span','dish-price',price(item)),element('span','dish-price-note',item.priceVerified?'Цена подтверждена':'Предварительная цена'));
-  meta.append(priceWrap,element('span','dish-more','Подробнее →'));body.append(meta);button.append(visual,body);article.append(button);addHold(button,item);return article;
+  const body=element('span','dish-body');if(!refined)body.append(element('span','dish-category',categoryTitle(item.categoryId)));body.append(element('span','dish-name',item.name));
+  const meta=element('span','dish-meta'),priceWrap=element('span','');priceWrap.append(element('span','dish-price',price(item)));if(!refined)priceWrap.append(element('span','dish-price-note',item.priceVerified?'Цена подтверждена':'Предварительная цена'));
+  meta.append(priceWrap);if(!refined)meta.append(element('span','dish-more','Подробнее →'));body.append(meta);button.append(visual,body);article.append(button);addHold(button,item);return article;
  }
  function render(animate=true){
   if(!catalog)return;
