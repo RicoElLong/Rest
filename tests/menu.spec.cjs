@@ -204,3 +204,10 @@ test('Desktop and mobile header Promotions opens the existing dialog and restore
   await p.locator('.promotions-trigger').click();assert.equal(await p.locator('#promotions-dialog').isVisible(),true);await p.locator('.promotions-close').click();assert.equal(await p.locator('#promotions-dialog').count(),1);await p.close();
  }
 });
+test('Mobile mastheads fit logo and phone in one row with the address below the number',async()=>{
+ for(const entry of ['index.html','menu.html'])for(const width of [320,360,390,430,640,768,920]){
+  const p=await pageAt(entry,{viewport:{width,height:950}});await p.evaluate(()=>document.fonts.ready);
+  const header=p.locator(entry==='index.html'?'.topbar-wrap':'.menu-header'),contact=header.locator('.mobile-header-contact');assert.equal(await contact.isVisible(),true);assert.equal(await contact.locator('.mobile-header-address').innerText(),'Самара, ул. Лейтенанта Шмидта, 1В');assert.equal(await contact.locator('.mobile-header-address').getAttribute('href'),entry==='index.html'?'#location':'index.html#location');assert.equal(await contact.locator('.header-phone').getAttribute('href'),'tel:+78920000000');
+  const logo=await header.locator('.brand-center').boundingBox(),group=await contact.boundingBox(),phone=await contact.locator('.header-phone').boundingBox(),address=await contact.locator('.mobile-header-address').boundingBox(),toggle=await header.locator('.mobile-toggle,.nav-toggle').boundingBox();assert(logo.x+logo.width<=group.x-4);assert(group.x+group.width<=toggle.x-4);assert(address.y>=phone.y+phone.height);assert((await contact.locator('.header-phone').evaluate(el=>parseFloat(getComputedStyle(el).fontSize)))<=14);assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await p.close();
+ }
+});
