@@ -97,7 +97,7 @@
   if(window.gsap)gsap.killTweensOf([...grid.children]);
   grid.replaceChildren(...items.map(card));grid.setAttribute('aria-busy','false');empty.hidden=items.length>0;
   announce(`${categoryTitle(category)} · показано ${items.length} из ${catalog.items.length}${search.value.trim()?` · поиск: «${search.value.trim()}»`:''}`);
-  if(animate)motion([...grid.children],{stagger:.018,duration:.32});
+  if(animate)motion([...grid.children].slice(0,6),{stagger:.02,duration:.24});
  }
  function choose(key,scroll=true){
   if(key==='booking'){openBooking();return;}
@@ -125,7 +125,7 @@
  async function load(){
   const sequence=++loadSequence;error.hidden=true;grid.setAttribute('aria-busy','true');announce('Загружаем меню…');
   try{
-   const response=await fetch(new URL('menu.json',scriptUrl));if(!response.ok)throw Error(`HTTP ${response.status}`);
+   const response=await fetch(new URL('menu.json',scriptUrl),{priority:'high'});if(!response.ok)throw Error(`HTTP ${response.status}`);
    const data=await response.json();
    if(!Array.isArray(data.items)||!Array.isArray(data.categories)||!data.items.length)throw Error('Invalid catalogue');
    const ids=new Set(data.categories.map(c=>c.id));if(data.items.some(i=>!i.id||!i.name||!ids.has(i.categoryId)))throw Error('Invalid item');

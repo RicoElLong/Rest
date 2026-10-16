@@ -87,3 +87,9 @@ test('Image data supports a full-size photo/zoom and failed photos fall back hon
 test('Existing kitchen, grill, bar and booking panels stay connected to the new catalogue',async()=>{
  for(const route of ['','menu.html']){const p=await pageAt(route);await p.locator('[data-section="grill"]').click();assert.equal(await count(p),10);await p.locator('[data-section="bar"]').click();assert.equal(await count(p),2);await p.locator('[data-section="kitchen"]').click();assert.equal(await count(p),48);await p.locator('[data-section="booking"]').click();assert.equal(await p.locator('#booking-dialog').isVisible(),true);assert.match(await p.locator('.booking-phone').getAttribute('href'),/^tel:/);await p.locator('.booking-close').click();await p.waitForFunction(()=>document.body.style.position!=='fixed');assert.deepEqual(p.errors,[]);await p.close();}
 });
+test('Catalogue becomes usable while the animation library is still downloading',async()=>{
+ const p=await browser.newPage({reducedMotion:'reduce'});let release;const gate=new Promise(resolve=>release=resolve);let libraryFinished=false,jsonRequests=0;
+ p.on('request',req=>{if(req.url().endsWith('/assets/menu.json'))jsonRequests++;});
+ await p.route('**/assets/vendor/gsap.min.js',async route=>{await gate;libraryFinished=true;await route.continue();});
+ try{await p.goto(base+'menu.html#selected-menu',{waitUntil:'commit'});await p.locator('.menu-dish').first().waitFor({timeout:5000});assert.equal(await count(p),48);assert.equal(libraryFinished,false);assert.equal(jsonRequests,1);await category(p,'soups');assert.equal(await count(p),3);}finally{release();await p.waitForLoadState('domcontentloaded');await p.close();}
+});

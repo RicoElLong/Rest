@@ -12,4 +12,6 @@
 - The user selected the restored headlight animation (mechanics from commit `8681494`, restored by `c81970d`) as the preferred version. Preserve the geometry, equal lens sizes, section sequence and scroll direction behavior in `assets/headlight-scroll.js` unless explicitly asked to change them. Do not reintroduce the rejected narrow spotlight treatment from `c50637d`.
 - Latest approved appearance: restore the original cooler cream-white headlight/beam colors, keep the broad cones shown in the user screenshot, and keep soft visible flicker enabled both at rest and during scroll projection. Do not narrow the beams. Respect prefers-reduced-motion.
 
-- Preserve the original automobile silhouette and all header/logo dimensions. `assets/logo-car-clean.svg` wraps the original PNG with a render-time noise cleanup filter; it is not a redesigned car. Keep the original PNG as the source.
+- Preserve the original automobile silhouette and all header/logo dimensions. `assets/logo-car-clean.svg` uses the exact original PNG alpha channel, losslessly encoded as a small WebP mask, with a render-time noise cleanup filter; it is not a redesigned car. Keep the original PNG as the source.
+
+- Keep catalogue data preloaded and its deferred script independent of GSAP loading. The catalogue must stay usable even if the animation library is delayed. Prefer optimized WebP assets for decorative images.
