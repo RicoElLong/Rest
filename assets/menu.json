@@ -8,108 +8,58 @@
     "Перед публикацией подтвердить цены, наличие, состав и выход блюд у ресторана.",
     "image=null: индивидуальная фотография пока не предоставлена. Нельзя использовать общий коллаж как якобы исходное HD-фото.",
     "Описания и истории — редакционный гастрономический контекст, не подтверждённая рецептура ресторана. Вес, ингредиенты и наличие остаются неизвестными.",
-    "placeholderImage в категории — временное иллюстративное фото. Индивидуальные снимки блюд позже добавляются в item.image и автоматически заменяют заглушку."
+    "placeholderImage в блюде — индивидуальная временная иллюстрация по названию. Настоящий снимок в item.image автоматически заменяет заглушку."
   ],
   "categories": [
     {
       "id": "grill",
       "title": "Шашлык и гриль",
-      "order": 1,
-      "placeholderImage": {
-        "src": "assets/grill-lamb-720.webp",
-        "size": "cover",
-        "position": "center"
-      }
+      "order": 1
     },
     {
       "id": "khachapuri",
       "title": "Хачапури и выпечка",
-      "order": 2,
-      "placeholderImage": {
-        "src": "assets/menu-placeholders.webp",
-        "size": "300% 327.1084%",
-        "position": "0% 0.0000%"
-      }
+      "order": 2
     },
     {
       "id": "hot-appetizers",
       "title": "Горячие закуски",
-      "order": 3,
-      "placeholderImage": {
-        "src": "assets/menu-placeholders.webp",
-        "size": "300% 327.1084%",
-        "position": "50% 0.0000%"
-      }
+      "order": 3
     },
     {
       "id": "soups",
       "title": "Супы",
-      "order": 4,
-      "placeholderImage": {
-        "src": "assets/menu-placeholders.webp",
-        "size": "300% 327.1084%",
-        "position": "100% 0.0000%"
-      }
+      "order": 4
     },
     {
       "id": "fish",
       "title": "Рыба",
-      "order": 5,
-      "placeholderImage": {
-        "src": "assets/menu-placeholders.webp",
-        "size": "300% 327.1084%",
-        "position": "0% 44.0318%"
-      }
+      "order": 5
     },
     {
       "id": "salads",
       "title": "Салаты",
-      "order": 6,
-      "placeholderImage": {
-        "src": "assets/menu-placeholders.webp",
-        "size": "300% 327.1084%",
-        "position": "50% 44.0318%"
-      }
+      "order": 6
     },
     {
       "id": "cold-appetizers",
       "title": "Холодные закуски",
-      "order": 7,
-      "placeholderImage": {
-        "src": "assets/menu-placeholders.webp",
-        "size": "300% 327.1084%",
-        "position": "100% 44.0318%"
-      }
+      "order": 7
     },
     {
       "id": "sides",
       "title": "Гарниры и хлеб",
-      "order": 8,
-      "placeholderImage": {
-        "src": "assets/menu-placeholders.webp",
-        "size": "300% 257.3460%",
-        "position": "0% 100.0000%"
-      }
+      "order": 8
     },
     {
       "id": "sauces",
       "title": "Соусы",
-      "order": 9,
-      "placeholderImage": {
-        "src": "assets/menu-placeholders.webp",
-        "size": "300% 257.3460%",
-        "position": "50% 100.0000%"
-      }
+      "order": 9
     },
     {
       "id": "desserts-drinks",
       "title": "Десерты и напитки",
-      "order": 10,
-      "placeholderImage": {
-        "src": "assets/menu-placeholders.webp",
-        "size": "300% 257.3460%",
-        "position": "100% 100.0000%"
-      }
+      "order": 10
     }
   ],
   "items": [
@@ -128,7 +78,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/grill-lamb-720.webp",
+        "size": "cover",
+        "position": "50% 50%"
+      }
     },
     {
       "id": "grill-02",
@@ -145,7 +100,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-1.webp",
+        "size": "302.2965% 307.6487%",
+        "position": "0.2064% 0.2729%"
+      }
     },
     {
       "id": "grill-03",
@@ -162,7 +122,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-1.webp",
+        "size": "304.2017% 307.6487%",
+        "position": "50.1029% 0.2729%"
+      }
     },
     {
       "id": "grill-04",
@@ -179,7 +144,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-1.webp",
+        "size": "302.9289% 307.6487%",
+        "position": "99.7938% 0.2729%"
+      }
     },
     {
       "id": "grill-05",
@@ -196,7 +166,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-1.webp",
+        "size": "302.2965% 314.7826%",
+        "position": "0.2064% 48.583%"
+      }
     },
     {
       "id": "grill-06",
@@ -213,7 +188,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-1.webp",
+        "size": "304.2017% 314.7826%",
+        "position": "50.1029% 48.583%"
+      }
     },
     {
       "id": "grill-07",
@@ -230,7 +210,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-1.webp",
+        "size": "302.9289% 314.7826%",
+        "position": "99.7938% 48.583%"
+      }
     },
     {
       "id": "grill-08",
@@ -247,7 +232,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-1.webp",
+        "size": "302.2965% 291.1528%",
+        "position": "0.2064% 99.7195%"
+      }
     },
     {
       "id": "grill-09",
@@ -264,7 +254,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-1.webp",
+        "size": "304.2017% 291.1528%",
+        "position": "50.1029% 99.7195%"
+      }
     },
     {
       "id": "grill-10",
@@ -281,7 +276,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-1.webp",
+        "size": "302.9289% 291.1528%",
+        "position": "99.7938% 99.7195%"
+      }
     },
     {
       "id": "khachapuri-01",
@@ -298,7 +298,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 327.1084%",
+        "position": "0% 0%"
+      }
     },
     {
       "id": "khachapuri-02",
@@ -315,7 +320,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-2.webp",
+        "size": "302.9289% 335.1852%",
+        "position": "0.2062% 0.2625%"
+      }
     },
     {
       "id": "khachapuri-03",
@@ -332,7 +342,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-2.webp",
+        "size": "302.9289% 335.1852%",
+        "position": "50% 0.2625%"
+      }
     },
     {
       "id": "khachapuri-04",
@@ -349,7 +364,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-2.webp",
+        "size": "303.5639% 335.1852%",
+        "position": "99.794% 0.2625%"
+      }
     },
     {
       "id": "hot-appetizers-01",
@@ -366,7 +386,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 327.1084%",
+        "position": "50% 0%"
+      }
     },
     {
       "id": "hot-appetizers-02",
@@ -383,7 +408,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-2.webp",
+        "size": "302.9289% 330.0912%",
+        "position": "0.2062% 43.7252%"
+      }
     },
     {
       "id": "hot-appetizers-03",
@@ -400,7 +430,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-2.webp",
+        "size": "302.9289% 330.0912%",
+        "position": "50% 43.7252%"
+      }
     },
     {
       "id": "hot-appetizers-04",
@@ -417,7 +452,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-2.webp",
+        "size": "303.5639% 330.0912%",
+        "position": "99.794% 43.7252%"
+      }
     },
     {
       "id": "hot-appetizers-05",
@@ -434,7 +474,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-2.webp",
+        "size": "302.9289% 259.1885%",
+        "position": "0.2062% 99.7001%"
+      }
     },
     {
       "id": "hot-appetizers-06",
@@ -451,7 +496,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-2.webp",
+        "size": "302.9289% 259.1885%",
+        "position": "50% 99.7001%"
+      }
     },
     {
       "id": "hot-appetizers-07",
@@ -468,7 +518,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-2.webp",
+        "size": "303.5639% 259.1885%",
+        "position": "99.794% 99.7001%"
+      }
     },
     {
       "id": "soups-01",
@@ -485,7 +540,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 327.1084%",
+        "position": "100% 0%"
+      }
     },
     {
       "id": "soups-02",
@@ -502,7 +562,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-3.webp",
+        "size": "302.9289% 318.4751%",
+        "position": "0.2062% 0.2685%"
+      }
     },
     {
       "id": "soups-03",
@@ -519,7 +584,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-3.webp",
+        "size": "302.2965% 318.4751%",
+        "position": "50.0516% 0.2685%"
+      }
     },
     {
       "id": "fish-01",
@@ -536,7 +606,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 327.1084%",
+        "position": "0% 44.0318%"
+      }
     },
     {
       "id": "fish-02",
@@ -553,7 +628,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-3.webp",
+        "size": "303.5639% 318.4751%",
+        "position": "99.794% 0.2685%"
+      }
     },
     {
       "id": "fish-03",
@@ -570,7 +650,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-3.webp",
+        "size": "302.9289% 326.1261%",
+        "position": "0.2062% 46.2151%"
+      }
     },
     {
       "id": "salads-01",
@@ -587,7 +672,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-3.webp",
+        "size": "302.2965% 326.1261%",
+        "position": "50.0516% 46.2151%"
+      }
     },
     {
       "id": "salads-02",
@@ -604,7 +694,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-3.webp",
+        "size": "303.5639% 326.1261%",
+        "position": "99.794% 46.2151%"
+      }
     },
     {
       "id": "salads-03",
@@ -621,7 +716,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 327.1084%",
+        "position": "50% 44.0318%"
+      }
     },
     {
       "id": "salads-04",
@@ -638,7 +738,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-3.webp",
+        "size": "302.9289% 272.8643%",
+        "position": "0.2062% 99.7093%"
+      }
     },
     {
       "id": "cold-appetizers-01",
@@ -655,7 +760,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 327.1084%",
+        "position": "100% 44.0318%"
+      }
     },
     {
       "id": "cold-appetizers-02",
@@ -672,7 +782,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-3.webp",
+        "size": "302.2965% 272.8643%",
+        "position": "50.0516% 99.7093%"
+      }
     },
     {
       "id": "cold-appetizers-03",
@@ -689,7 +804,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-3.webp",
+        "size": "303.5639% 272.8643%",
+        "position": "99.794% 99.7093%"
+      }
     },
     {
       "id": "cold-appetizers-04",
@@ -706,7 +826,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-4.webp",
+        "size": "301.0395% 317.5439%",
+        "position": "0.2068% 0.2688%"
+      }
     },
     {
       "id": "cold-appetizers-05",
@@ -723,7 +848,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-4.webp",
+        "size": "304.8421% 317.5439%",
+        "position": "50.1542% 0.2688%"
+      }
     },
     {
       "id": "cold-appetizers-06",
@@ -740,7 +870,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-4.webp",
+        "size": "303.5639% 317.5439%",
+        "position": "99.794% 0.2688%"
+      }
     },
     {
       "id": "sides-01",
@@ -757,7 +892,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-4.webp",
+        "size": "301.0395% 330.0912%",
+        "position": "0.2068% 46.103%"
+      }
     },
     {
       "id": "sides-02",
@@ -774,7 +914,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 257.3460%",
+        "position": "0% 100%"
+      }
     },
     {
       "id": "sides-03",
@@ -791,7 +936,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-4.webp",
+        "size": "304.8421% 330.0912%",
+        "position": "50.1542% 46.103%"
+      }
     },
     {
       "id": "sides-04",
@@ -808,7 +958,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-4.webp",
+        "size": "303.5639% 330.0912%",
+        "position": "99.794% 46.103%"
+      }
     },
     {
       "id": "sides-05",
@@ -825,7 +980,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-4.webp",
+        "size": "301.0395% 270.8229%",
+        "position": "0.2068% 99.708%"
+      }
     },
     {
       "id": "sauces-01",
@@ -842,7 +1002,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-4.webp",
+        "size": "304.8421% 270.8229%",
+        "position": "50.1542% 99.708%"
+      }
     },
     {
       "id": "sauces-02",
@@ -859,7 +1024,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-4.webp",
+        "size": "303.5639% 270.8229%",
+        "position": "99.794% 99.708%"
+      }
     },
     {
       "id": "sauces-03",
@@ -876,7 +1046,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-5.webp",
+        "size": "303.5639% 305.9155%",
+        "position": "0.206% 0.2736%"
+      }
     },
     {
       "id": "sauces-04",
@@ -893,7 +1068,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-5.webp",
+        "size": "302.9289% 305.9155%",
+        "position": "50% 0.2736%"
+      }
     },
     {
       "id": "desserts-drinks-01",
@@ -910,7 +1090,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": "general_culinary_context",
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders.webp",
+        "size": "300% 257.3460%",
+        "position": "100% 100%"
+      }
     },
     {
       "id": "desserts-drinks-02",
@@ -927,7 +1112,12 @@
       "available": null,
       "imageStatus": "missing",
       "historyType": null,
-      "descriptionVerified": false
+      "descriptionVerified": false,
+      "placeholderImage": {
+        "src": "assets/menu-placeholders-5.webp",
+        "size": "303.5639% 305.9155%",
+        "position": "99.794% 0.2736%"
+      }
     }
   ]
 }

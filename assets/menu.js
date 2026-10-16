@@ -33,13 +33,13 @@
  }
  function imageData(item){return typeof item.image==='string'?{src:item.image}:item.image;}
  function decoratePlaceholder(placeholder,item){
-  const photo=catalog?.categories.find(c=>c.id===item.categoryId)?.placeholderImage;
+  const photo=item.placeholderImage;
   placeholder.classList.toggle('has-category-photo',Boolean(photo?.src));
   placeholder.style.backgroundImage=photo?.src?`url("${new URL(photo.src,location.href).href}")`:'';
   placeholder.style.backgroundSize=photo?.size||'';
   placeholder.style.backgroundPosition=photo?.position||'';
   placeholder.lastElementChild.textContent=photo?.src?'Временное фото':'Фотография готовится';
-  if(photo?.src){placeholder.setAttribute('role','img');placeholder.setAttribute('aria-label',`${categoryTitle(item.categoryId)} — временная фотография`);}
+  if(photo?.src){placeholder.setAttribute('role','img');placeholder.setAttribute('aria-label',`${item.name} — временная фотография`);}
   else{placeholder.removeAttribute('role');placeholder.removeAttribute('aria-label');}
  }
  function attachImage(image,item,onError){

@@ -42,15 +42,17 @@ test('Every category shows exactly its JSON positions and preserves URL state',a
  assert.equal(seen.size,48);
  await p.reload();await p.locator('.menu-dish').first().waitFor();assert.equal(await count(p),2);assert.deepEqual(p.errors,[]);await p.close();
 });
-test('Local temporary category photos load in cards and dialogs on both entry points',async()=>{
+test('All 48 dishes have distinct matching local photo placeholders on both entry points',async()=>{
+ const signatures=data.items.map(item=>{const photo=item.placeholderImage;assert(photo?.src);assert(fs.existsSync(path.join(root,photo.src)));return `${photo.src}|${photo.size}|${photo.position}`;});assert.equal(new Set(signatures).size,48);
  for(const entry of ['index.html','menu.html']){const p=await pageAt(entry);
   for(const cat of data.categories){
-   assert(cat.placeholderImage?.src);assert(fs.existsSync(path.join(root,cat.placeholderImage.src)));
-   await category(p,cat.id);assert.equal(await p.locator('.dish-placeholder.has-category-photo').count(),data.items.filter(i=>i.categoryId===cat.id).length);
-   const photo=p.locator('.dish-placeholder.has-category-photo').first();assert.equal(await photo.innerText(),'Временное фото');
-   const background=await photo.evaluate(el=>getComputedStyle(el).backgroundImage);assert(background.includes(cat.placeholderImage.src));
-   await p.evaluate(async src=>{const image=new Image();image.src=src;await image.decode();if(!image.naturalWidth)throw Error('Empty placeholder image');},new URL(cat.placeholderImage.src,p.url()).href);
-   await p.locator('.dish-button').first().click();const modal=p.locator('.catalog-dialog-placeholder');assert.equal(await modal.isVisible(),true);assert.equal(await modal.evaluate(el=>getComputedStyle(el).backgroundImage),background);assert.equal(await modal.innerText(),'Временное фото');assert.equal(await p.locator('.dialog-zoom').isVisible(),false);await p.keyboard.press('Escape');
+   const items=data.items.filter(i=>i.categoryId===cat.id);await category(p,cat.id);assert.equal(await p.locator('.dish-placeholder.has-category-photo').count(),items.length);
+   for(const item of items){
+    const photo=p.locator(`[data-item-id="${item.id}"] .dish-placeholder`);assert.equal(await photo.innerText(),'Временное фото');assert.equal(await photo.getAttribute('aria-label'),`${item.name} — временная фотография`);
+    const background=await photo.evaluate(el=>getComputedStyle(el).backgroundImage);assert(background.includes(item.placeholderImage.src));assert.equal(await photo.evaluate(el=>el.style.backgroundPosition),item.placeholderImage.position);
+    await p.evaluate(async src=>{const image=new Image();image.src=src;await image.decode();if(!image.naturalWidth)throw Error('Empty placeholder image');},new URL(item.placeholderImage.src,p.url()).href);
+    await p.locator(`[data-item-id="${item.id}"] .dish-button`).click();const modal=p.locator('.catalog-dialog-placeholder');assert.equal(await modal.isVisible(),true);assert.equal(await modal.evaluate(el=>getComputedStyle(el).backgroundImage),background);assert.equal(await modal.innerText(),'Временное фото');assert.equal(await p.locator('.dialog-zoom').isVisible(),false);await p.keyboard.press('Escape');
+   }
   }
   assert.deepEqual(p.errors,[]);await p.close();
  }
