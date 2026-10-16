@@ -56,7 +56,7 @@
   [{id:'all',title:'Все блюда'},...catalog.categories].forEach(cat=>{
    const count=cat.id==='all'?catalog.items.length:catalog.items.filter(i=>i.categoryId===cat.id).length;
    const button=element('button','',cat.title);button.type='button';button.dataset.category=cat.id;button.setAttribute('aria-controls','dish-grid');
-   if(!document.body.classList.contains('menu-page')){const badge=element('span','',String(count));badge.setAttribute('aria-hidden','true');button.append(badge);}
+   if(!section.classList.contains('catalog-editorial')){const badge=element('span','',String(count));badge.setAttribute('aria-hidden','true');button.append(badge);}
    button.addEventListener('click',()=>{category=cat.id;selected=category==='grill'?'grill':category==='desserts-drinks'?'bar':'kitchen';syncPanels();syncCategories();render();saveUrl(true);button.scrollIntoView({behavior:reduced.matches?'instant':'smooth',block:'nearest',inline:'nearest'});});
    filters.append(button);
   });
