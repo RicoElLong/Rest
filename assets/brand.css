@@ -24,10 +24,8 @@
 @media(max-width:640px){.car-headlight:before{width:210px;height:58px}.car-headlight-right:before{height:54px}}
 @media(prefers-reduced-motion:reduce){.car-headlight,.brand-center.is-flickering .car-headlight{animation:none;opacity:.85}}
 
-/* Header actions and messenger demo shared by restaurant pages. */
+/* Messenger demo shared by restaurant pages. */
 .topbar .brand-center,.header-inner .brand-center{margin-left:-12px;margin-right:auto}
-.promotions-trigger{order:5;flex:0 0 auto;margin-left:16px;padding:12px 18px;border:1px solid #e6cca1;border-radius:999px;background:transparent;color:#e6cca1;font:600 12px Arial,sans-serif;cursor:pointer}
-.promotions-trigger:hover{background:#e6cca1;color:#132522}
 .promotions-trigger:focus-visible,.promotions-dialog button:focus-visible{outline:2px solid #e6cca1;outline-offset:4px}
 .promotions-dialog{box-sizing:border-box;width:min(460px,calc(100% - 32px));max-height:calc(100dvh - 40px);padding:40px 28px 24px;border:1px solid #e6cca166;border-radius:20px;background:#132522;color:#f2e6d1;box-shadow:0 24px 100px #0008;font:15px/1.6 Arial,sans-serif}
 .promotions-dialog::backdrop{background:#050d0cbb;backdrop-filter:blur(5px)}
@@ -38,7 +36,7 @@
 .promotions-options button{display:flex;align-items:center;justify-content:space-between;gap:16px;flex:1;padding:16px;border:1px solid #e6cca166;border-radius:12px;background:#e6cca10d;color:#f2e6d1;font:600 15px Arial,sans-serif;cursor:pointer}
 .promotions-options button:hover,.promotions-options button[aria-pressed=true]{background:#e6cca1;color:#132522}
 .promotions-status{font-size:12px;color:#c6c3b9;min-height:58px}
-@media(max-width:640px){.topbar .brand-center,.header-inner .brand-center{margin-left:-6px;width:calc(100% - 142px);flex:0 1 auto;min-width:0;gap:5px}.brand-center .wordmark-restaurant{font-size:clamp(10px,2.6vw,16px)}.brand-center .wordmark-children{font-size:clamp(23px,5.8vw,35px)}.brand-center .wordmark-bottom{font-size:clamp(8px,2.25vw,14px)}.promotions-trigger{margin-left:0;padding:10px 12px;font-size:11px}.mobile-header{margin-left:0!important}.promotions-dialog{padding:38px 22px 20px}}
+@media(max-width:640px){.topbar .brand-center,.header-inner .brand-center{margin-left:-6px;width:calc(100% - 142px);flex:0 1 auto;min-width:0;gap:5px}.brand-center .wordmark-restaurant{font-size:clamp(10px,2.6vw,16px)}.brand-center .wordmark-children{font-size:clamp(23px,5.8vw,35px)}.brand-center .wordmark-bottom{font-size:clamp(8px,2.25vw,14px)}.mobile-header{margin-left:0!important}.promotions-dialog{padding:38px 22px 20px}}
 
 /* Scroll-directed beams share the same lens size and preserve idle geometry. */
 .car-headlight:before{width:var(--beam-length,clamp(200px,31vw,440px));height:var(--beam-height,100px);opacity:var(--beam-opacity,1);transform:translateY(-50%) rotate(var(--beam-angle,0deg))}

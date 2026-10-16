@@ -20,5 +20,6 @@
 
 - Default catalogue selection on both entry points is `grill` (10 dishes). There is no all-dishes mode or category button; legacy `?category=all` links fall back to grill. Search, reset and hero panels must keep a single real category selected. Preserve all 48 dishes across the 10 categories.
 - Category navigation wraps into compact rows on desktop and mobile, with no horizontal scrolling, scrollbar or swipe hint.
+- Never show the written phone number in desktop or mobile headers. Keep booking links functional. Promotions belongs at the right of the gastronomic map heading, not in the header; its filled brass button and header booking buttons keep black text on hover, focus and press.
 - Do not show filler text about missing recipes, source data, uncertain dish names or unavailable descriptions. Leave editorial fields empty and hide their blocks when meaningful copy is unavailable.
 - Gallery links should align the carousel photograph below the sticky header using a single offset, including after catalogue data changes page height.

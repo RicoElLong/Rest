@@ -7,6 +7,11 @@
 @media(hover:hover){.topbar-wrap a.header-section-link:hover,.menu-header a.header-section-link:hover{color:#e6cca1;text-decoration:none}.topbar-wrap a.header-section-link:hover:after,.menu-header a.header-section-link:hover:after{transform:scaleX(1)}}
 @media(min-width:921px) and (max-width:1250px){.topbar-wrap a.header-section-link,.menu-header a.header-section-link{font-size:12px;letter-spacing:.015em}.topbar-wrap .nav-left{gap:16px}}
 .topbar-wrap .mobile-menu a.header-section-link,.menu-header .mobile-nav a.header-section-link{font-size:16px;min-height:44px;padding:10px 0}
+/* Filled brass actions keep black lettering in every interaction state. */
+.topbar-wrap a.restaurant-action,.menu-header a.restaurant-action,.menu-catalog.catalog-editorial .restaurant-action{box-sizing:border-box;min-height:44px;padding:12px 20px;border:1px solid #e6cca1;border-radius:999px;background:#e6cca1;color:#000;-webkit-text-fill-color:#000;font:700 10px/1.4 Arial,sans-serif;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;white-space:nowrap;cursor:pointer;box-shadow:0 10px 35px #0002;transition:background .2s ease,transform .2s ease}
+.topbar-wrap a.restaurant-action:is(:hover,:active,:focus,:visited),.menu-header a.restaurant-action:is(:hover,:active,:focus,:visited),.menu-catalog.catalog-editorial .restaurant-action:is(:hover,:active,:focus){color:#000;-webkit-text-fill-color:#000;background:#e6cca1;text-decoration:none}
+.topbar-wrap a.restaurant-action:hover,.menu-header a.restaurant-action:hover,.menu-catalog.catalog-editorial .restaurant-action:hover{background:#f0d8b0}
+.topbar-wrap .mobile-menu a.restaurant-action,.menu-header .mobile-nav a.restaurant-action{justify-self:start;display:inline-flex;align-items:center;justify-content:center}
 /* Native anchor scrolling must not add the header offset twice. */
 #gallery.gallery-section{scroll-margin-top:0}
 @media(prefers-reduced-motion:reduce){.topbar-wrap a.header-section-link,.menu-header a.header-section-link,.topbar-wrap a.header-section-link:after,.menu-header a.header-section-link:after{transition:none}}

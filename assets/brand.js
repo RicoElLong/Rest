@@ -1,13 +1,8 @@
 (() => {
   const brand=document.querySelector('.brand-center');
   if(!brand)return;
-  const header=brand.parentElement;
-  const trigger=document.createElement('button');
-  trigger.className='promotions-trigger';
-  trigger.textContent='Акции';
-  trigger.setAttribute('aria-haspopup','dialog');
-  trigger.setAttribute('aria-controls','promotions-dialog');
-  header.append(trigger);
+  const trigger=document.querySelector('.promotions-trigger');
+  if(!trigger)return;
   const modal=document.createElement('dialog');
   modal.id='promotions-dialog';
   modal.className='promotions-dialog';
