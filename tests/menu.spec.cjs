@@ -179,3 +179,9 @@ test('Mobile menu closes outside the header and when returning to desktop',async
   await toggle.click();await p.keyboard.press('Escape');assert.equal(await toggle.getAttribute('aria-expanded'),'false');await toggle.click();await p.setViewportSize({width:1440,height:950});await p.waitForFunction(()=>document.querySelector('.mobile-toggle,.nav-toggle').getAttribute('aria-expanded')==='false');assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await p.close();
  }
 });
+test('Logo loads once as a filter-free high-resolution PNG on retina phones and desktop',async()=>{
+ for(const entry of ['index.html','menu.html'])for(const [width,dpr]of [[320,3],[390,3],[768,2],[1440,1]]){
+  const p=await browser.newPage({viewport:{width,height:900},deviceScaleFactor:dpr,reducedMotion:'reduce'});let requests=0;p.on('request',request=>{if(new URL(request.url()).pathname.endsWith('/logo-car-compatible.png'))requests++;});await p.goto(base+entry,{waitUntil:'domcontentloaded'});
+  const logo=p.locator('.logo-car');await logo.evaluate(img=>img.decode());const info=await logo.evaluate(img=>({width:img.naturalWidth,height:img.naturalHeight,ratio:img.getBoundingClientRect().width/img.getBoundingClientRect().height,filter:getComputedStyle(img).filter,src:img.currentSrc}));assert.equal(info.width,2172);assert.equal(info.height,724);assert(Math.abs(info.ratio-3)<.01);assert.equal(info.filter,'none');assert(info.src.includes('logo-car-compatible.png'));assert.equal(requests,1);assert.equal(await p.locator('.car-headlight').count(),2);assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await p.close();
+ }
+});
