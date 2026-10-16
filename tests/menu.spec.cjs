@@ -53,7 +53,7 @@ test('Search normalizes е/ё, empty results reset, and sorting uses numeric pri
 });
 test('Deep links, reload and browser back/forward retain catalogue selection',async()=>{
  const p=await pageAt('menu.html?category=soups&q=харчо&sort=price-desc#selected-menu');assert.equal(await count(p),1);assert.equal(await p.locator('#dish-search').inputValue(),'харчо');assert.equal(await p.locator('#dish-sort').inputValue(),'price-desc');
- await p.locator('#dish-search').fill('');await p.waitForTimeout(180);await category(p,'fish');assert.equal(await count(p),3);await category(p,'grill');assert.equal(await count(p),10);await p.goBack();assert.equal(await count(p),3);assert.match(await p.locator('#selection-heading').innerText(),/Рыба/);await p.goForward();assert.equal(await count(p),10);await p.close();
+ await p.locator('#dish-search').fill('');await p.waitForTimeout(180);await category(p,'fish');assert.equal(await count(p),3);await category(p,'grill');assert.equal(await count(p),10);await p.goBack();assert.equal(await count(p),3);assert.equal(await p.locator('[data-category="fish"]').getAttribute('aria-pressed'),'true');await p.goForward();assert.equal(await count(p),10);await p.close();
 });
 test('650 ms mouse hold opens once; movement cancels hold; regular click still works',async()=>{
  const p=await pageAt('menu.html',{reducedMotion:'no-preference'});const button=p.locator('.dish-button').first();await button.scrollIntoViewIfNeeded();
@@ -71,12 +71,12 @@ test('Mobile layouts and homepage keep navigation and contacts after gallery',as
  for(const width of [320,390,430,768,1024]){const p=await pageAt('',{viewport:{width,height:950},isMobile:width<768,hasTouch:width<768});assert.equal(await count(p),48);assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.equal(await p.evaluate(()=>[...document.querySelectorAll('section')].at(-1).id),'location');await p.locator('.dish-button').first().click();assert.equal(await p.evaluate(()=>document.body.style.position),'fixed');assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await p.keyboard.press('Escape');await p.waitForFunction(()=>document.body.style.position!=='fixed');assert.equal(await p.evaluate(()=>document.body.style.position),'');assert.deepEqual(p.errors,[]);await p.close();}
 });
 test('Mobile touch categories scroll; content scroll does not close dialog; handle swipe does',async()=>{
- const p=await pageAt('menu.html',{viewport:{width:390,height:844},isMobile:true,hasTouch:true});const cdp=await p.context().newCDPSession(p);
+ const p=await pageAt('menu.html',{viewport:{width:390,height:640},isMobile:true,hasTouch:true});const cdp=await p.context().newCDPSession(p);
  async function swipe(x,y,dx,dy){await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x,y}]});for(let i=1;i<=8;i++)await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:x+dx*i/8,y:y+dy*i/8}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await p.waitForTimeout(100);}
  await p.locator('.catalog-categories').scrollIntoViewIfNeeded();let r=await p.locator('.catalog-categories').boundingBox();await swipe(r.x+r.width-30,r.y+22,-200,0);assert((await p.locator('.catalog-categories').evaluate(el=>el.scrollLeft))>0);
  // Let native horizontal momentum finish before a new independent tap.
  await p.waitForTimeout(800);
- await p.locator('.dish-button').first().tap();assert.equal(await p.locator('#dish-dialog').isVisible(),true);await swipe(100,650,0,-160);assert.equal(await p.locator('#dish-dialog').isVisible(),true);assert((await p.locator('#dish-dialog').evaluate(el=>el.scrollTop))>0);await p.waitForTimeout(600);await p.locator('#dish-dialog').evaluate(el=>el.scrollTop=0);await swipe(150,18,0,120);assert.equal(await p.locator('#dish-dialog').isVisible(),false);await p.close();
+ await p.locator('.dish-button').first().tap();assert.equal(await p.locator('#dish-dialog').isVisible(),true);await swipe(100,520,0,-140);assert.equal(await p.locator('#dish-dialog').isVisible(),true);assert((await p.locator('#dish-dialog').evaluate(el=>el.scrollTop))>0);await p.waitForTimeout(600);await p.locator('#dish-dialog').evaluate(el=>el.scrollTop=0);await swipe(150,18,0,120);assert.equal(await p.locator('#dish-dialog').isVisible(),false);await p.close();
 });
 test('Image data supports a full-size photo/zoom and failed photos fall back honestly',async()=>{
  const p=await browser.newPage({reducedMotion:'reduce'});let broken=false;
@@ -92,4 +92,10 @@ test('Catalogue becomes usable while the animation library is still downloading'
  p.on('request',req=>{if(req.url().endsWith('/assets/menu.json'))jsonRequests++;});
  await p.route('**/assets/vendor/gsap.min.js',async route=>{await gate;libraryFinished=true;await route.continue();});
  try{await p.goto(base+'menu.html#selected-menu',{waitUntil:'commit'});await p.locator('.menu-dish').first().waitFor({timeout:5000});assert.equal(await count(p),48);assert.equal(libraryFinished,false);assert.equal(jsonRequests,1);await category(p,'soups');assert.equal(await count(p),3);}finally{release();await p.waitForLoadState('domcontentloaded');await p.close();}
+});
+test('Menu page uses text-only categories and omits recipe-status lines without changing the homepage',async()=>{
+ const p=await pageAt();assert.equal(await p.locator('#selection-heading').innerText(),'Гастрономическая карта');assert.equal(await p.locator('.catalog-categories button span').count(),0);assert.equal(await p.locator('.dialog-composition,.dialog-hint').count(),0);
+ const active=p.locator('[data-category="all"]');const styles=await active.evaluate(el=>({background:getComputedStyle(el).backgroundColor,border:getComputedStyle(el).borderTopWidth,radius:getComputedStyle(el).borderRadius,line:getComputedStyle(el,'::after').transform}));assert.equal(styles.background,'rgba(0, 0, 0, 0)');assert.equal(styles.border,'0px');assert.equal(styles.radius,'0px');assert.equal(styles.line,'matrix(1, 0, 0, 1, 0, 0)');
+ const grill=p.locator('[data-category="grill"]');await grill.hover();assert.equal(await grill.evaluate(el=>getComputedStyle(el,'::after').transform),'matrix(1, 0, 0, 1, 0, 0)');await grill.click();assert.equal(await count(p),10);await p.locator('.dish-button').first().click();assert.equal(await p.locator('#dish-dialog').isVisible(),true);assert.doesNotMatch(await p.locator('#dish-dialog').innerText(),/Состав и наличие|Наличие уточняется у ресторана|Уточните состав и аллергены перед заказом/);await p.keyboard.press('Escape');await p.close();
+ const home=await pageAt('');assert.equal(await home.locator('.catalog-categories button span').count(),11);assert.equal(await home.locator('.dialog-composition').count(),1);assert.equal(await home.locator('#selection-heading').innerText(),'Меню ресторана');await home.close();
 });
