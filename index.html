@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
 <link rel="preload" href="assets/logo-car-compatible.png?v=logo-20261016" as="image" fetchpriority="high">
-<link rel="preload" href="assets/menu.json?v=mobile-20261016" as="fetch" crossorigin="anonymous" fetchpriority="high">
-<script defer src="assets/menu.js?v=mobile-20261016" fetchpriority="high"></script>
+<link rel="preload" href="assets/menu.json?v=no-search-20261018" as="fetch" crossorigin="anonymous" fetchpriority="high">
+<script defer src="assets/menu.js?v=no-search-20261018" fetchpriority="high"></script>
 <script defer src="assets/vendor/gsap.min.js" fetchpriority="low"></script>
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -200,13 +200,13 @@
   <div class="selection-head"><div><p class="eyebrow" id="selection-kicker">Грузинская кухня · волжское гостеприимство</p><h2 id="selection-heading" tabindex="-1" data-catalog-title="Гастрономическая карта">Гастрономическая карта</h2></div><div class="selection-actions"><button class="close-selection" aria-label="Свернуть каталог блюд">Свернуть ×</button><button type="button" class="promotions-trigger restaurant-action" aria-haspopup="dialog" aria-controls="promotions-dialog">Акции</button></div></div>
   <p class="catalog-notice">Цены предварительные. Наличие, состав, аллергены и выход порций уточняйте у официанта.</p>
   <div class="catalog-category-wrap"><div class="dish-filters catalog-categories" role="group" aria-label="Категории блюд"></div></div>
-  <div class="catalog-toolbar"><label class="catalog-search"><span>Найти блюдо</span><input type="search" id="dish-search" placeholder="Найти блюдо" autocomplete="off" maxlength="160"></label><label class="catalog-sort"><span>Порядок</span><select id="dish-sort"><option value="menu">Как в меню</option><option value="price-asc">Цена по возрастанию</option><option value="price-desc">Цена по убыванию</option><option value="name">По названию</option></select></label></div>
+  <div class="catalog-toolbar"><label class="catalog-sort"><span>Порядок</span><select id="dish-sort"><option value="menu">Как в меню</option><option value="price-asc">Цена по возрастанию</option><option value="price-desc">Цена по убыванию</option><option value="name">По названию</option></select></label></div>
   <p id="menu-status" class="catalog-status" role="status" aria-live="polite">Загружаем меню…</p>
   <div class="catalog-error" hidden><p>Не удалось загрузить меню. Проверьте соединение и попробуйте ещё раз.</p><button type="button" class="catalog-retry">Повторить загрузку</button></div>
   <div class="dish-grid" id="dish-grid" aria-busy="true"></div>
-  <div class="empty-state" hidden><p>Таких блюд не нашли.</p><button type="button" class="catalog-reset">Сбросить поиск</button></div>
+  <div class="empty-state" hidden><p>Таких блюд не нашли.</p><button type="button" class="catalog-reset">Сбросить сортировку</button></div>
   <p class="menu-note">Фотографии в меню временные и будут заменены снимками ресторана. Бронирование: <a href="tel:+78920000000">+7 (892) 000-00-00</a>.</p>
-  <noscript><p>Для поиска и подробных карточек включите JavaScript. <a href="assets/menu.json">Скачать каталог JSON</a> или позвоните в ресторан.</p></noscript>
+  <noscript><p>Для просмотра подробных карточек включите JavaScript. <a href="assets/menu.json">Скачать каталог JSON</a> или позвоните в ресторан.</p></noscript>
  </div>
 </section>
 <dialog id="booking-dialog" class="booking-dialog" aria-labelledby="booking-title"><button class="booking-close" aria-label="Закрыть окно бронирования">×</button><div class="booking-content"><p class="eyebrow">Дети лейтенанта Шмидта</p><h2 id="booking-title">Бронирование зала</h2><p>Позвоните нам, чтобы выбрать зал и обсудить ваше событие.</p><a class="booking-phone" href="tel:+78920000000">+7 (892) 000-00-00</a><a class="gold-button" href="tel:+78920000000">Позвонить в ресторан</a><p class="booking-address">Самара, улица Лейтенанта Шмидта, 1В</p></div></dialog><dialog id="dish-dialog" class="catalog-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-price-status">

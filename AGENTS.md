@@ -27,3 +27,5 @@
 - Keep mobile layout overrides in `assets/mobile.css`: up to 920px the chooser is one vertical column in this order: kitchen, grill, bar, booking and the benefits strip stays in normal document flow. At phone widths use matching readable cards on both pages (one column below 360px, two above), 16px search controls and touch targets of at least 44px. Preserve the desktop layout.
 
 - The shared palette in `assets/black-green.css` uses the masthead near-black green `#080f0b` for section backgrounds and `#0b1710` for raised surfaces. Preserve brass accents, white phone numerals and natural photo colors.
+
+- The catalogue search field has been removed on both pages at the user’s request. Preserve category selection, sorting and dish dialogs; ignore and clear legacy `q` URL parameters.

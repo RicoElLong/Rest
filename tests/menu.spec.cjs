@@ -62,15 +62,14 @@ test('All 48 detail dialogs preserve exact names, prices, histories and unknown 
  for(const item of data.items){if(item.categoryId!==active){await category(p,item.categoryId);active=item.categoryId;}const card=p.locator(`[data-item-id="${item.id}"] .dish-button`);await card.click();assert.equal(await p.locator('#dialog-title').innerText(),item.name);assert.equal((await p.locator('#dialog-price').innerText()).replace(/\s/g,''),`${item.priceRub}₽`);assert.equal(await p.locator('#dialog-history').textContent(),item.history||'');assert.equal(await p.locator('.dialog-story').isVisible(),Boolean(item.history));assert.match(await p.locator('#dialog-price-status').innerText(),/Предварительная/);assert.equal(await p.locator('#dialog-weight').isVisible(),false);assert.equal(await p.locator('.dialog-zoom').isVisible(),false);await p.keyboard.press('Escape');assert.equal(await card.evaluate(el=>document.activeElement===el),true);}
  assert.deepEqual(p.errors,[]);await p.close();
 });
-test('Search normalizes е/ё, empty results reset, and sorting uses numeric prices',async()=>{
- const p=await pageAt('menu.html?category=soups');await p.locator('#dish-search').fill('семги');await p.waitForTimeout(180);assert.equal(await count(p),1);assert.match(await p.locator('.dish-name').innerText(),/сёмги/);
- await p.locator('#dish-search').fill('zzzz-нет-такого');await p.waitForTimeout(180);assert.equal(await count(p),0);assert.equal(await p.locator('.empty-state').isVisible(),true);assert.equal(await p.locator('.catalog-reset').innerText(),'Сбросить поиск');await p.locator('.catalog-reset').click();assert.equal(await count(p),3);assert.equal(new URL(p.url()).searchParams.get('category'),'soups');await category(p,'grill');
+test('Catalogue has no search field and sorting uses numeric prices',async()=>{
+ const p=await pageAt('menu.html?category=grill');assert.equal(await p.locator('#dish-search,.catalog-search').count(),0);
  for(const sort of ['price-asc','price-desc']){await p.locator('#dish-sort').selectOption(sort);const ids=await p.locator('.menu-dish').evaluateAll(nodes=>nodes.map(n=>n.dataset.itemId));const prices=ids.map(id=>data.items.find(i=>i.id===id).priceRub);assert.deepEqual(prices,[...prices].sort((a,b)=>sort==='price-asc'?a-b:b-a));}
  await p.close();
 });
 test('Deep links, reload and browser back/forward retain catalogue selection',async()=>{
- const p=await pageAt('menu.html?category=soups&q=харчо&sort=price-desc#selected-menu');assert.equal(await count(p),1);assert.equal(await p.locator('#dish-search').inputValue(),'харчо');assert.equal(await p.locator('#dish-sort').inputValue(),'price-desc');
- await p.locator('#dish-search').fill('');await p.waitForTimeout(180);await category(p,'fish');assert.equal(await count(p),3);await category(p,'grill');assert.equal(await count(p),10);await p.goBack();assert.equal(await count(p),3);assert.equal(await p.locator('[data-category="fish"]').getAttribute('aria-pressed'),'true');await p.goForward();assert.equal(await count(p),10);await p.close();
+ const p=await pageAt('menu.html?category=soups&q=харчо&sort=price-desc#selected-menu');assert.equal(await count(p),3);assert.equal(new URL(p.url()).searchParams.has('q'),false);assert.equal(await p.locator('#dish-sort').inputValue(),'price-desc');
+ await category(p,'fish');assert.equal(await count(p),3);await category(p,'grill');assert.equal(await count(p),10);await p.goBack();assert.equal(await count(p),3);assert.equal(await p.locator('[data-category="fish"]').getAttribute('aria-pressed'),'true');await p.goForward();assert.equal(await count(p),10);await p.close();
 });
 test('650 ms mouse hold opens once; movement cancels hold; regular click still works',async()=>{
  const p=await pageAt('menu.html',{reducedMotion:'no-preference'});const button=p.locator('.dish-button').first();await button.scrollIntoViewIfNeeded();
@@ -138,7 +137,7 @@ test('Legacy all links and a search without category never expand the catalogue'
   for(const suffix of ['?category=all','?category=invalid','?q=шашлык']){
    const p=await pageAt(entry+suffix);assert.equal(await p.locator('[data-category="all"]').count(),0);assert.doesNotMatch(await p.locator('.catalog-categories').innerText(),/Все блюда/);assert.equal(await p.locator('[data-category="grill"]').getAttribute('aria-pressed'),'true');assert((await count(p))<=10);assert.equal(await p.locator('.menu-dish').evaluateAll(nodes=>nodes.every(n=>n.dataset.itemId.startsWith('grill-'))),true);
    if(!suffix.includes('q=')){assert.equal(await count(p),10);assert.equal(new URL(p.url()).searchParams.get('category'),'grill');}
-   await p.locator('#dish-search').fill('нет-такого');await p.locator('.catalog-reset').waitFor();await p.locator('.catalog-reset').click();assert.equal(await count(p),10);await p.reload();await p.locator('.menu-dish').first().waitFor();assert.equal(await count(p),10);await p.close();
+   assert.equal(await p.locator('#dish-search,.catalog-search').count(),0);assert.equal(await count(p),10);await p.reload();await p.locator('.menu-dish').first().waitFor();assert.equal(await count(p),10);await p.close();
   }
   const p=await pageAt(entry+'#kitchen');assert.equal(await count(p),4);assert.equal(await p.locator('[data-category="khachapuri"]').getAttribute('aria-pressed'),'true');await p.close();
  }
@@ -166,7 +165,7 @@ test('Phone and tablet layouts stack chooser tiles in order with readable contro
   assert.equal(tiles.columns,1,`${entry} ${width}`);assert(tiles.height<=720);assert.equal(tiles.inside,true,`${entry} ${width}`);
   assert.deepEqual(await p.locator('.menu-panel').evaluateAll(nodes=>nodes.map(el=>el.dataset.section)),['kitchen','grill','bar','booking']);assert.equal(await p.locator('.menu-panel').evaluateAll(nodes=>nodes.every((el,i)=>i===0||el.getBoundingClientRect().top>=nodes[i-1].getBoundingClientRect().bottom)),true);
   await p.waitForFunction(()=>[...document.querySelectorAll('.menu-panel img')].every(img=>img.complete&&img.naturalWidth>0));
-  for(const selector of ['#dish-search','#dish-sort'])assert((await p.locator(selector).evaluate(el=>parseFloat(getComputedStyle(el).fontSize)))>=16);
+  for(const selector of ['#dish-sort'])assert((await p.locator(selector).evaluate(el=>parseFloat(getComputedStyle(el).fontSize)))>=16);
   const header=p.locator(entry==='index.html'?'.topbar-wrap':'.menu-header'),toggle=header.locator('button[aria-controls]').first();const logo=await header.locator('.brand-center').boundingBox(),control=await toggle.boundingBox();assert(logo.x+logo.width<=control.x-4);assert(control.width>=44&&control.height>=44);
   if(entry==='index.html')assert.equal(await p.locator('.hero-bottom').evaluate(el=>getComputedStyle(el).position),'static');
   await p.locator('[data-section="grill"]').click();await p.waitForFunction(()=>{const section=document.querySelector('#selected-menu').getBoundingClientRect(),header=document.querySelector('.topbar-wrap,.menu-header').getBoundingClientRect();return section.top>=header.height+6&&section.top<=header.height+40;});
