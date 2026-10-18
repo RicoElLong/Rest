@@ -15,10 +15,10 @@
   lamps.forEach((lamp,i)=>{
    const origin=lamp.getBoundingClientRect();
    const target=link?.getBoundingClientRect();
-   const mobile=innerWidth<=640;
+   const mobile=innerWidth<=920;
    let length=mobile?210:Math.min(440,Math.max(200,innerWidth*.31));
    let angle=i?1.5:0,height=mobile?(i?54:58):(i?92:100),opacity=1,power=1;
-   if(!reset){
+   if(!reset&&!mobile){
     const dx=target?target.x+target.width*.65-(origin.x+origin.width/2):Math.max(80,innerWidth-origin.x-18);
     const dy=target?target.y+target.height/2-(origin.y+origin.height/2):0;
     length=Math.max(80,Math.hypot(dx,dy)+28);
@@ -30,13 +30,19 @@
     // Extend the second beam slightly further for a layered cone of light.
     length+=i*12;
    }
+   // Mobile navigation sits below the logo: never aim the lamps at its moving links.
+   if(mobile&&!reset){opacity=state.direction>0?1+index*.05:.85;power=1;}
    const props={'--beam-length':length+'px','--beam-height':height+'px','--beam-angle':angle+'deg','--beam-opacity':opacity,'--lamp-power':power};
-   if(window.gsap)gsap.to(lamp,{...props,duration:animate&&!reduced.matches?.85:0,ease:'power2.out',overwrite:true});
+   if(mobile){
+    window.gsap?.killTweensOf(lamp);
+    for(const[key,value]of Object.entries(props))lamp.style.setProperty(key,String(value));
+   }else if(window.gsap)gsap.to(lamp,{...props,duration:animate&&!reduced.matches?.85:0,ease:'power2.out',overwrite:true});
    else for(const[key,value]of Object.entries(props))lamp.style.setProperty(key,String(value));
   });
  }
  addEventListener('restaurant:sectionchange',event=>{state=event.detail;project()});
- addEventListener('resize',()=>project(false));
+ let layoutWidth=innerWidth;
+ addEventListener('resize',()=>{if(innerWidth!==layoutWidth){layoutWidth=innerWidth;project(false);}});
  reduced.addEventListener('change',()=>project(false));
  // Navigation starts before this script and may already have selected a section.
  const current=document.querySelector('.nav-left [aria-current],.nav-right [aria-current]');

@@ -29,3 +29,5 @@
 - The shared palette in `assets/black-green.css` uses the masthead near-black green `#080f0b` for section backgrounds and `#0b1710` for raised surfaces. Preserve brass accents, white phone numerals and natural photo colors.
 
 - The catalogue search field has been removed on both pages at the user’s request. Preserve category selection, sorting and dish dialogs; ignore and clear legacy `q` URL parameters.
+
+- Mobile headlight stability override: at widths up to 920px keep beam origins, angles, length and height fixed relative to the automobile. Preserve opacity flicker, but never aim at dropdown navigation or restart geometry on viewport-height-only resize. Keep desktop section projection unchanged.

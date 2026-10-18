@@ -48,3 +48,6 @@
 @media(prefers-reduced-motion:reduce){.brand-center.is-projecting .car-headlight,.brand-center.is-projecting.is-flickering .car-headlight{animation:none;opacity:.85;filter:none}.nav-left a.is-beam-lit,.nav-right a.is-beam-lit{text-shadow:none}}
 /* Keep long light cones inside the viewport without clipping dropdown height. */
 .topbar-wrap{overflow-x:clip}
+
+/* Keep mobile lamps attached to the artwork; only opacity flickers. */
+@media(max-width:920px){.brand-center.is-projecting .car-headlight{filter:none}}
