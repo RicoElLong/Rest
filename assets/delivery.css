@@ -1,9 +1,9 @@
 /* Shared Yandex Food delivery link. */
 .delivery-widget{position:fixed;right:24px;bottom:24px;z-index:900;font-family:Arial,sans-serif;color:#e6cca1}
 .delivery-trigger{box-sizing:border-box;text-decoration:none;display:flex;align-items:center;gap:12px;min-height:58px;padding:10px 22px 10px 16px;border:1px solid #bfa371;border-radius:6px;background:rgba(11,23,16,.82);color:#e6cca1;box-shadow:0 6px 28px #0008;cursor:pointer;font:normal 19px/1.2 Georgia,serif;transition:background .2s,box-shadow .2s}
-.delivery-trigger svg{width:29px;height:29px;flex-shrink:0}
+.delivery-trigger .delivery-icon{width:29px;height:29px;flex-shrink:0;display:block;object-fit:contain;border-radius:26%}
 .delivery-trigger:hover{background:rgba(21,41,28,.94);box-shadow:0 6px 28px #0009,0 0 16px #d8bc8314;color:#f1dbb3}
 .delivery-trigger:focus-visible{outline:2px solid #f1dbb3;outline-offset:4px}
 body{padding-bottom:88px}
-@media(max-width:640px){.delivery-widget{right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px))}.delivery-trigger{min-height:50px;padding:9px 16px;gap:9px;font-size:17px}.delivery-trigger svg{width:25px;height:25px}body{padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}}
+@media(max-width:640px){.delivery-widget{right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px))}.delivery-trigger{min-height:50px;padding:9px 16px;gap:9px;font-size:17px}.delivery-trigger .delivery-icon{width:25px;height:25px}body{padding-bottom:calc(82px + env(safe-area-inset-bottom,0px))}}
 @media(prefers-reduced-motion:reduce){.delivery-trigger{transition:none}}
