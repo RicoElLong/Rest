@@ -73,26 +73,33 @@ def chrome(c,v,p):
 from io import BytesIO
 
 def dish_card(c,item,x,top,w,rowheight,v,fg,gold):
-    if v==2:
-        iw=230;ih=145
-        coverphoto(c,item,x,top-ih,iw,ih)
-        tx=x+iw+22;tw=w-iw-22
-        names=wrap(item['name'],tw,14,'Serif')
-        for n,name in enumerate(names):text(c,tx,top-26-n*19,name,14,'Serif',fg)
-        yy=top-36-len(names)*19
-        text(c,tx,yy,f"{item['priceRub']:,}".replace(',',' ')+' ₽',15,'Sans',gold)
-        text(c,tx,yy-24,'Выход: '+(str(item['weightGrams'])+' г' if item['weightGrams'] else '—'),9,'Sans',fg)
-        line(c,tx,top-ih,tx+tw,top-ih,gold,.35)
-        return
-    ih=round(w*3/4) if v!=3 else 100
-    coverphoto(c,item,x,top-ih,w,ih)
-    yy=top-ih-18
-    fs=10 if v==1 else 11
-    for name in wrap(item['name'],w,fs,'Serif'):
-        text(c,x,yy,name,fs,'Serif',fg);yy-=14
-    text(c,x,yy-8,f"{item['priceRub']:,}".replace(',',' ')+' ₽',11,'Sans',gold)
-    right(c,x+w,yy-8,'Выход: '+(str(item['weightGrams'])+' г' if item['weightGrams'] else '—'),8,'Sans',fg)
-    if v in [0,4]:line(c,x,top-rowheight+14,x+w,top-rowheight+14,gold,.3)
+    height=rowheight-18
+    bottom=top-height
+    coverphoto(c,item,x,bottom,w,height)
+    fs=10 if v==1 else 13 if v==2 else 12
+    leading=fs*1.3
+    names=wrap(item['name'],w-26,fs,'Serif')
+    band=max(95,52+len(names)*leading)
+    # Transparent black-green gradient keeps the food visible behind the copy.
+    c.saveState()
+    c.setFillColor(HexColor(G))
+    steps=100
+    for n in range(steps):
+        t=n/(steps-1)
+        c.setFillAlpha(.94*(1-t)**.65)
+        c.rect(x,bottom+n*band/steps,w,band/steps+.2,fill=1,stroke=0)
+    c.restoreState()
+    for n,name in enumerate(names):
+        text(c,x+13,bottom+47+(len(names)-1-n)*leading,name,fs,'Serif','#ffffff')
+    price=f"{item['priceRub']:,}".replace(',',' ')+' ₽'
+    weight='Выход: '+(str(item['weightGrams'])+' г' if item['weightGrams'] else '—')
+    text(c,x+13,bottom+21,weight,8,'Sans','#f0e9db')
+    right(c,x+w-13,bottom+21,price,11 if v==1 else 13,'Sans',GOLD)
+    if v in [0,4]:
+        c.setStrokeColor(HexColor(GOLD));c.setLineWidth(.4)
+        c.rect(x,bottom,w,height,fill=0,stroke=1)
+    if v==4:
+        line(c,x+13,bottom+37,x+w-13,bottom+37,GOLD,.3)
 
 for v,(slug,label) in enumerate(styles):
     capacity=[4,6,3,6,4][v]
