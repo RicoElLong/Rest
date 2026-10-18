@@ -1,5 +1,5 @@
 from pathlib import Path
-import json, math, shutil
+import json, math
 from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
@@ -44,7 +44,9 @@ def coverphoto(c,item,x,y,w,h):
   ww=im.height*r;im=im.crop(((im.width-ww)/2,0,(im.width+ww)/2,im.height))
  else:
   hh=im.width/r;im=im.crop((0,(im.height-hh)/2,im.width,(im.height+hh)/2))
- c.drawImage(ImageReader(im),x,y,w,h)
+ im.thumbnail((1000,750))
+ encoded=BytesIO();im.save(encoded,format='JPEG',quality=86,optimize=True);encoded.seek(0)
+ c.drawImage(ImageReader(encoded),x,y,w,h)
 
 def chrome(c,v,p):
  light=v==3;bg='#f3eddf' if light else G;fg='#17291e' if light else INK;gold='#826331' if light else GOLD
@@ -60,65 +62,76 @@ def chrome(c,v,p):
  right(c,W-40,H-56,'РЕСТОРАН',8,'Sans',gold);right(c,W-40,H-72,'САМАРА · ВОЛГА',7,'Sans',fg)
  line(c,40,H-102,W-40,H-102,gold)
  text(c,40,H-132,'Гастрономическая карта',22 if v!=4 else 23,'Serif',gold)
- text(c,40,H-152,titles[p],10,'Sans',fg)
- right(c,W-40,H-152,f'0{p+1} / 04',9,'Sans',gold)
+ text(c,40,H-152,current_title,12,'Serif',fg)
+ right(c,W-40,H-152,f'{p+1:02d} / {total_pages:02d}',9,'Sans',gold)
  line(c,40,80,W-40,80,gold,.3)
  text(c,40,63,'Самара, ул. Лейтенанта Шмидта, 1В  ·  +7 (892) 000-00-00',7,'Sans',fg)
  text(c,40,49,'Цены из каталога сайта · предварительные. «—» — выход не указан.',6.8,'Sans',fg)
- text(c,40,36,'Макет для согласования · '+styles[v][1],6.5,'Sans',gold)
+ text(c,40,36,'Фото — временные иллюстрации · '+styles[v][1],6.5,'Sans',gold)
  return fg,gold
 
-def section(c,cat,x,y,width,fg,gold,v):
- title=next(k['title'] for k in data['categories'] if k['id']==cat)
- if v==4:
-  text(c,x,y,'◇',11,'Sans',gold);x+=18;width-=18
- text(c,x,y,title,13 if width<300 else 15,'Bold',gold);y-=12
- line(c,x,y,x+width,y,gold,.35)
- right(c,x+width-72,y-10,'Выход',6.5,'Sans',gold);right(c,x+width,y-10,'Цена',6.5,'Sans',gold);y-=25
- rows=[i for i in data['items'] if i['categoryId']==cat]
- for item in rows:
-  price=f"{item['priceRub']:,}".replace(',',' ')+' ₽'
-  weight=f"{item['weightGrams']} г" if item['weightGrams'] else '—'
-  names=wrap(item['name'],width-115,10.5 if width>300 else 10)
-  for idx,s in enumerate(names):text(c,x,y-idx*14,s,10.5 if width>300 else 10,'Serif',fg)
-  right(c,x+width-72,y,weight,9,'Sans',fg);right(c,x+width,y,price,10,'Sans',gold)
-  y-=max(1,len(names))*14+(9 if v==2 else 12)
- return y-14
+from io import BytesIO
+
+def dish_card(c,item,x,top,w,rowheight,v,fg,gold):
+    if v==2:
+        iw=230;ih=145
+        coverphoto(c,item,x,top-ih,iw,ih)
+        tx=x+iw+22;tw=w-iw-22
+        names=wrap(item['name'],tw,14,'Serif')
+        for n,name in enumerate(names):text(c,tx,top-26-n*19,name,14,'Serif',fg)
+        yy=top-36-len(names)*19
+        text(c,tx,yy,f"{item['priceRub']:,}".replace(',',' ')+' ₽',15,'Sans',gold)
+        text(c,tx,yy-24,'Выход: '+(str(item['weightGrams'])+' г' if item['weightGrams'] else '—'),9,'Sans',fg)
+        line(c,tx,top-ih,tx+tw,top-ih,gold,.35)
+        return
+    ih=round(w*3/4) if v!=3 else 100
+    coverphoto(c,item,x,top-ih,w,ih)
+    yy=top-ih-18
+    fs=10 if v==1 else 11
+    for name in wrap(item['name'],w,fs,'Serif'):
+        text(c,x,yy,name,fs,'Serif',fg);yy-=14
+    text(c,x,yy-8,f"{item['priceRub']:,}".replace(',',' ')+' ₽',11,'Sans',gold)
+    right(c,x+w,yy-8,'Выход: '+(str(item['weightGrams'])+' г' if item['weightGrams'] else '—'),8,'Sans',fg)
+    if v in [0,4]:line(c,x,top-rowheight+14,x+w,top-rowheight+14,gold,.3)
 
 for v,(slug,label) in enumerate(styles):
- path=OUT/(slug+'.pdf');c=canvas.Canvas(str(path),pagesize=(W,H));c.setTitle(label+' — Дети лейтенанта Шмидта');c.setAuthor('Ресторан «Дети лейтенанта Шмидта»')
- for p,cats in enumerate(groups):
-  fg,gold=chrome(c,v,p);y=H-190
-  if v==2:
-   hero=next(i for i in data['items'] if i['categoryId']==cats[0]);coverphoto(c,hero,40,y-80,W-80,80)
-   text(c,47,y-72,'Временная иллюстрация',6,'Sans','#ffffff');y-=105
-  if v==1:
-   # Two balanced columns: one compact chapter per category, preserving order.
-   left=cats[:1] if p!=3 else cats[:2];rightcats=[k for k in cats if k not in left]
-   for col,cs in enumerate([left,rightcats]):
-    x=40+col*267;yy=y
-    for cat in cs:yy=section(c,cat,x,yy,248,fg,gold,v)
-   line(c,W/2,105,W/2,y+8,gold,.3)
-  else:
-   if v==4:
-    text(c,40,y,'ВОЛЖСКИЙ АВАНТЮРИЗМ',8,'Sans',gold);y-=30
-   # Photo layout uses slightly tighter rows to leave generous image space.
-   for cat in cats:
-    y=section(c,cat,40,y,W-80,fg,gold,v)
-  if y<85:raise ValueError((slug,p,y))
-  c.showPage()
- c.save()
- doc=fitz.open(path);alltext=''.join(page.get_text() for page in doc)
- for item in data['items']:
-  assert item['name'] in alltext.replace('\n',' '), (slug,item['name'])
- pix=doc[0].get_pixmap(matrix=fitz.Matrix(.9,.9));pix.save(str(OUT/(slug+'.png')))
- 
- print(slug,len(doc),path.stat().st_size)
-# A single comparison image.
+    capacity=[4,6,3,6,4][v]
+    pages=[]
+    for cat in data['categories']:
+        items=[i for i in data['items'] if i['categoryId']==cat['id']]
+        for start in range(0,len(items),capacity):
+            pages.append((cat['title']+(' · продолжение' if start else ''),items[start:start+capacity]))
+    total_pages=len(pages)
+    path=OUT/(slug+'.pdf');c=canvas.Canvas(str(path),pagesize=(W,H))
+    c.setTitle(label+' — Дети лейтенанта Шмидта');c.setAuthor('Ресторан «Дети лейтенанта Шмидта»')
+    for p,(current_title,items) in enumerate(pages):
+        fg,gold=chrome(c,v,p)
+        cols=[2,3,1,2,2][v];rows=math.ceil(capacity/cols)
+        gutter=20 if cols!=3 else 14
+        width=(W-80-(cols-1)*gutter)/cols
+        rh=550/rows
+        for n,item in enumerate(items):
+            x=40+(n%cols)*(width+gutter);top=H-181-(n//cols)*rh
+            dish_card(c,item,x,top,width,rh,v,fg,gold)
+        c.showPage()
+    c.save()
+    doc=fitz.open(path);alltext=' '.join(page.get_text().replace('\n',' ') for page in doc)
+    for item in data['items']:assert item['name'] in alltext,(slug,item['name'])
+    photo_count=sum(len(page.get_image_info())-1 for page in doc)
+    assert photo_count==48,(slug,photo_count)
+    for page in doc:
+        for b in page.get_text('dict')['blocks']:
+            if b['type']!=0:continue
+            for l in b['lines']:
+                for span in l['spans']:
+                    x0,y0,x1,y1=span['bbox']
+                    assert 0<=x0<x1<=W and 0<=y0<y1<=H,(slug,span)
+    doc[0].get_pixmap(matrix=fitz.Matrix(.9,.9)).save(str(OUT/(slug+'.png')))
+    print(slug,len(doc),'pages;',photo_count,'dish photos;',path.stat().st_size,'bytes')
 thumbs=[]
 for slug,label in styles:
- im=Image.open(OUT/(slug+'.png')).convert('RGB');im.thumbnail((350,495));thumbs.append((im,label))
+    im=Image.open(OUT/(slug+'.png')).convert('RGB');im.thumbnail((350,495));thumbs.append((im,label))
 board=Image.new('RGB',(5*382,565),'#152219');d=ImageDraw.Draw(board);font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',15)
 for j,(im,label) in enumerate(thumbs):
- x=j*382+16;board.paste(im,(x,16));d.text((x,527),str(j+1)+'. '+label,font=font,fill='#e2c693')
+    x=j*382+16;board.paste(im,(x,16));d.text((x,527),str(j+1)+'. '+label,font=font,fill='#e2c693')
 board.save(str(OUT/'5-menu-variants.jpg'),quality=92)
