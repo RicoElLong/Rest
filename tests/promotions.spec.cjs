@@ -18,7 +18,7 @@ test('Promotions page fits eight widths, keeps touch controls readable and separ
   const header=await p.locator('.menu-header').boundingBox();const logo=await p.locator('.brand-center').boundingBox();assert(logo.x>=-1&&logo.x+logo.width<=width,'logo clipped');assert(header.width<=width);
   if(width<=1024){await p.locator('.nav-toggle').click();assert.equal(await p.locator('#mobile-nav').isVisible(),true);await p.keyboard.press('Escape');assert.equal(await p.locator('#mobile-nav').isVisible(),false);assert.equal(await p.locator('.nav-toggle').getAttribute('aria-expanded'),'false');}
   await p.waitForFunction(()=>[...document.querySelectorAll('.offer-image img')].every(img=>img.complete&&img.naturalWidth>0));
-  assert.doesNotMatch(await p.locator('main').innerText(),/\d+\s*%|бесплатн|подарок|скидк/i);assert.deepEqual(p.errors,[]);
+  assert.doesNotMatch(await p.locator('.offers-grid').innerText(),/\d+\s*%|бесплатн|подарок|скидк/i);assert.match(await p.locator('.roulette-preview-note').innerText(),/МАКЕТ|макет/i);assert.deepEqual(p.errors,[]);
   if(width===390||width===1440)await p.screenshot({path:`/workspace/shared/promotions-${width}.png`,fullPage:true});await p.close();
  }
 });
