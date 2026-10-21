@@ -33,3 +33,5 @@
 - Mobile headlight stability override: at widths up to 920px keep beam origins, angles, length and height fixed relative to the automobile. Preserve opacity flicker, but never aim at dropdown navigation or restart geometry on viewport-height-only resize. Keep desktop section projection unchanged.
 
 - Telegram site entry approved on 2026-10-21: use the owner-provided public bot `https://t.me/RESTSCHMIDTBOT` with `start=src_site_home` / `src_site_menu` for the two pages. All existing «Акции» controls must be normal HTTPS anchors opening the bot directly, without a dialog; retain keyboard/focus support. Visiting the bot is not marketing consent. Do not restore the MAX demo or introduce bot tokens into public files. Publication requires the owner’s separate approval.
+
+- Kitchen PDF override (2026-10-21): the first «Меню кухни» panel on both entry points is a native link to `assets/menus/kitchen-menu.pdf`, opening a new tab. Do not intercept it with catalogue selection or preload the 10 MB PDF. Preserve grill/bar/category/booking behavior and keep menu JSON preload/fetch cache versions identical. Replace this PDF only with an owner-provided file.

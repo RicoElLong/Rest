@@ -8,7 +8,7 @@
  const sort=root.querySelector('#dish-sort');
  const filters=root.querySelector('.catalog-categories'),status=root.querySelector('#menu-status');
  const empty=root.querySelector('.empty-state'),error=root.querySelector('.catalog-error');
- const panels=[...root.querySelectorAll('.menu-panel')];
+ const panels=[...root.querySelectorAll('button.menu-panel')];
  const dialog=root.querySelector('#dish-dialog'),booking=root.querySelector('#booking-dialog');
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const number=new Intl.NumberFormat('ru-RU');

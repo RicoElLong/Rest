@@ -14,7 +14,7 @@ before(async()=>{
    if(pathname.endsWith('/'))pathname+='index.html';
    const file=path.resolve(root,'.'+pathname);
    if(!file.startsWith(root+path.sep))throw Error('Outside root');
-   const mime={'.html':'text/html','.js':'text/javascript','.json':'application/json','.css':'text/css','.svg':'image/svg+xml','.jpg':'image/jpeg','.png':'image/png','.webp':'image/webp'}[path.extname(file)]||'application/octet-stream';
+   const mime={'.pdf':'application/pdf','.html':'text/html','.js':'text/javascript','.json':'application/json','.css':'text/css','.svg':'image/svg+xml','.jpg':'image/jpeg','.png':'image/png','.webp':'image/webp'}[path.extname(file)]||'application/octet-stream';
    res.setHeader('Content-Type',mime);res.end(fs.readFileSync(file));
   }catch{res.writeHead(404);res.end('Not found');}
  });
@@ -98,8 +98,17 @@ test('Image data supports a full-size photo/zoom and failed photos fall back hon
  // A relative image path is site-relative, as in the supplied catalogue schema.
  await p.goto(base+'menu.html');await p.locator('.menu-dish').first().waitFor();await p.locator('.dish-button').first().click();await p.waitForFunction(()=>document.querySelector('#dialog-image').naturalWidth>0);assert.equal(await p.locator('.dialog-zoom').isVisible(),true);await p.locator('.dialog-zoom').click();assert.equal(await p.locator('.dialog-zoom').getAttribute('aria-pressed'),'true');await p.keyboard.press('Escape');broken=true;await p.reload();await p.locator('.dish-button').first().click();await p.waitForTimeout(150);assert.equal(await p.locator('.catalog-dialog-placeholder').isVisible(),true);assert.equal(await p.locator('.dialog-zoom').isVisible(),false);await p.close();
 });
-test('Existing kitchen, grill, bar and booking panels stay connected to the new catalogue',async()=>{
- for(const route of ['','menu.html']){const p=await pageAt(route);await p.locator('[data-section="grill"]').click();assert.equal(await count(p),10);await p.locator('[data-section="bar"]').click();assert.equal(await count(p),2);await p.locator('[data-section="kitchen"]').click();assert.equal(await count(p),4);assert.equal(await p.locator('[data-category="khachapuri"]').getAttribute('aria-pressed'),'true');await p.locator('[data-section="booking"]').click();assert.equal(await p.locator('#booking-dialog').isVisible(),true);assert.match(await p.locator('.booking-phone').getAttribute('href'),/^tel:/);await p.locator('.booking-close').click();await p.waitForFunction(()=>document.body.style.position!=='fixed');assert.deepEqual(p.errors,[]);await p.close();}
+test('Kitchen opens the supplied PDF while grill, bar, categories and booking keep working',async()=>{
+ const pdfPath='assets/menus/kitchen-menu.pdf';const expected=fs.readFileSync(path.join(root,pdfPath));assert.equal(expected.subarray(0,5).toString(),'%PDF-');
+ for(const route of ['','menu.html'])for(const width of [390,1440]){
+  const p=await pageAt(route,{viewport:{width,height:950}});const kitchen=p.locator('[data-section="kitchen"]');
+  assert.equal(await kitchen.evaluate(el=>el.tagName),'A');assert.equal(await kitchen.getAttribute('href'),pdfPath);assert.equal(await kitchen.getAttribute('target'),'_blank');assert.equal(await kitchen.getAttribute('rel'),'noopener noreferrer');assert.equal(await kitchen.getAttribute('aria-expanded'),null);
+  assert.equal(p.context().pages().length,1);assert.equal(await count(p),10);
+  const response=await p.request.get(new URL(pdfPath,p.url()).href);assert.equal(response.status(),200);assert.match(response.headers()['content-type'],/application\/pdf/);assert.deepEqual(await response.body(),expected);
+  const openedPromise=p.waitForEvent('popup');if(width===390)await kitchen.click();else{await kitchen.focus();await kitchen.press('Enter');}const opened=await openedPromise;await opened.waitForURL(url=>url.pathname.endsWith('/'+pdfPath),{waitUntil:'commit'});assert.equal(opened.url(),new URL(pdfPath,p.url()).href);await opened.close();assert.equal(await count(p),10);
+  await p.locator('[data-section="bar"]').click();assert.equal(await count(p),2);await category(p,'khachapuri');assert.equal(await count(p),4);assert.equal(await p.locator('[data-category="khachapuri"]').getAttribute('aria-pressed'),'true');await p.locator('[data-section="grill"]').click();assert.equal(await count(p),10);
+  await p.locator('[data-section="booking"]').click();assert.equal(await p.locator('#booking-dialog').isVisible(),true);assert.match(await p.locator('.booking-phone').getAttribute('href'),/^tel:/);await p.locator('.booking-close').click();await p.waitForFunction(()=>document.body.style.position!=='fixed');assert.deepEqual(p.errors,[]);await p.close();
+ }
 });
 test('Catalogue becomes usable while the animation library is still downloading',async()=>{
  const p=await browser.newPage({reducedMotion:'reduce'});let release;const gate=new Promise(resolve=>release=resolve);let libraryFinished=false,jsonRequests=0;
