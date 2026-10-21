@@ -1,0 +1,7 @@
+/* Separate bot entry, stacked above the existing delivery widget. */
+.telegram-widget{position:fixed;right:24px;bottom:94px;z-index:900;color:#e6cca1}
+.telegram-trigger{box-sizing:border-box;display:flex;align-items:center;gap:12px;min-height:58px;padding:10px 22px 10px 16px;border:1px solid #bfa371;border-radius:6px;background:rgba(11,23,16,.84);color:#e6cca1;box-shadow:0 6px 28px #0008;font:19px/1.2 Georgia,serif;text-decoration:none;transition:background .2s,color .2s}
+.telegram-trigger svg{width:29px;height:29px;flex-shrink:0}.telegram-trigger:hover{background:rgba(21,41,28,.96);color:#f1dbb3}.telegram-trigger:focus-visible{outline:2px solid #f1dbb3;outline-offset:4px}
+body{padding-bottom:158px}
+@media(max-width:640px){.telegram-widget{right:16px;bottom:calc(76px + env(safe-area-inset-bottom,0px))}.telegram-trigger{min-height:50px;padding:9px 16px;gap:9px;font-size:17px}.telegram-trigger svg{width:25px;height:25px}body{padding-bottom:calc(148px + env(safe-area-inset-bottom,0px))}}
+@media(prefers-reduced-motion:reduce){.telegram-trigger{transition:none}}
