@@ -204,16 +204,26 @@ test('Both pages share the black-green masthead palette and the updated contact 
   assert.equal(await count(p),10);assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await p.close();
  }
 });
-test('Removed promotions stay absent while Telegram and delivery widgets work on desktop and mobile',async()=>{
+test('Header promotions follow banquets and open Telegram while the removed page stays absent',async()=>{
  for(const entry of ['index.html','menu.html'])for(const width of [320,375,390,430,768,1024,1440,1920]){
   const p=await pageAt(entry,{viewport:{width,height:950}});
   assert.equal(await p.locator('[data-promotions-page],.promotions-trigger,#promotions-dialog,a[href="news.html"]').count(),0);
-  assert.doesNotMatch(await p.locator('body').innerText(),/Акции/);
+  const header=p.locator(entry==='index.html'?'.topbar-wrap':'.menu-header');
+  const headerExpected='https://t.me/RESTSCHMIDTBOT?start='+(entry==='index.html'?'src_header_home':'src_header_menu');
+  assert.equal(await header.locator('[data-header-promotions]').count(),2);assert.equal(await p.locator('[data-header-promotions]').count(),2);
+  for(const link of await header.locator('[data-header-promotions]').all()){
+   assert.equal(await link.textContent(),'Акции');assert.equal(await link.getAttribute('href'),headerExpected);assert.equal(await link.getAttribute('target'),'_blank');assert.equal(await link.getAttribute('rel'),'noopener noreferrer');
+   assert.equal(await link.evaluate(el=>el.previousElementSibling.textContent),'Банкеты');
+  }
   const expected='https://t.me/RESTSCHMIDTBOT?start='+(entry==='index.html'?'src_widget_home':'src_widget_menu');
   const telegram=p.locator('[data-telegram-widget]');assert.equal(await telegram.getAttribute('href'),expected);assert.equal(await telegram.getAttribute('rel'),'noopener noreferrer');assert.equal(await telegram.isVisible(),true);
   const delivery=p.locator('.delivery-widget');assert.equal(await delivery.isVisible(),true);const tgBox=await telegram.boundingBox(),deliveryBox=await delivery.boundingBox();assert(tgBox.y+tgBox.height<=deliveryBox.y-7);
   assert.equal(await p.locator('[data-section="kitchen"]').getAttribute('href'),'assets/menus/kitchen-menu.pdf');assert.equal(await count(p),10);
   if(width===390||width===1440){await p.context().route('https://t.me/**',route=>route.fulfill({status:200,contentType:'text/html',body:'Telegram navigation intercepted locally'}));await telegram.focus();const popupPromise=p.waitForEvent('popup');await telegram.press('Enter');const popup=await popupPromise;await popup.waitForLoadState('domcontentloaded');assert.equal(popup.url(),expected);await popup.close();}
+  if(width===390||width===1440){
+   if(width===390)await header.locator('.mobile-toggle,.nav-toggle').click();
+   const link=header.locator('[data-header-promotions]:visible');await link.focus();const opened=p.waitForEvent('popup');await link.press('Enter');const tab=await opened;await tab.waitForLoadState('domcontentloaded');assert.equal(tab.url(),headerExpected);await tab.close();
+  }
   assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.deepEqual(p.errors,[]);await p.close();
  }
  assert.equal(fs.existsSync(path.join(root,'news.html')),false);
