@@ -139,7 +139,7 @@ test('Both entry points initially open grill and retain a selected real category
  for(const route of ['','index.html','menu.html']){const p=await browser.newPage({reducedMotion:'reduce'});await p.goto(base+route,{waitUntil:'domcontentloaded'});await p.locator('.menu-dish').first().waitFor();assert.equal(await count(p),10);assert.equal(await p.locator('[data-section="grill"]').getAttribute('aria-expanded'),'true');assert.equal(await p.locator('[data-category="grill"]').getAttribute('aria-pressed'),'true');const image=p.locator('[data-section="grill"] img');assert.equal(await image.getAttribute('src'),'assets/grill-lamb-720.webp');await p.waitForFunction(()=>document.querySelector('[data-section="grill"] img').naturalWidth>0);await category(p,'khachapuri');assert.equal(await count(p),4);assert.equal(new URL(p.url()).searchParams.get('category'),'khachapuri');await p.reload();await p.locator('.menu-dish').first().waitFor();assert.equal(await count(p),4);await p.close();}
 });
 test('Header drops About, enlarges navigation, animates the brass line and stays inside mobile widths',async()=>{
- for(const route of ['index.html','menu.html']){for(const width of [320,390,1024,1440]){const p=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});await p.goto(base+route,{waitUntil:'domcontentloaded'});await p.locator('.menu-dish').first().waitFor();assert.equal(await p.locator('.topbar-wrap a,.menu-header a').filter({hasText:'О ресторане'}).count(),0);assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);if(width===1440){const link=p.locator(route==='index.html'?'.nav-left [data-promotions-page]':'.desktop-nav a[href="index.html#gallery"]');assert((await link.evaluate(el=>parseFloat(getComputedStyle(el).fontSize)))>=14);await link.hover();assert.equal(await link.evaluate(el=>getComputedStyle(el,'::after').transform),'matrix(1, 0, 0, 1, 0, 0)');}await p.close();}}
+ for(const route of ['index.html','menu.html']){for(const width of [320,390,1024,1440]){const p=await browser.newPage({viewport:{width,height:900},reducedMotion:'reduce'});await p.goto(base+route,{waitUntil:'domcontentloaded'});await p.locator('.menu-dish').first().waitFor();assert.equal(await p.locator('.topbar-wrap a,.menu-header a').filter({hasText:'О ресторане'}).count(),0);assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);if(width===1440){const link=p.locator(route==='index.html'?'.nav-left a[href="#menu"]':'.desktop-nav a[href="index.html#gallery"]');assert((await link.evaluate(el=>parseFloat(getComputedStyle(el).fontSize)))>=14);await link.hover();assert.equal(await link.evaluate(el=>getComputedStyle(el,'::after').transform),'matrix(1, 0, 0, 1, 0, 0)');}await p.close();}}
 });
 test('Legacy all links and a search without category never expand the catalogue',async()=>{
  for(const entry of ['index.html','menu.html']){
@@ -204,13 +204,19 @@ test('Both pages share the black-green masthead palette and the updated contact 
   assert.equal(await count(p),10);assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await p.close();
  }
 });
-test('Promotions opens the site page and a separate widget opens Telegram on desktop and mobile',async()=>{
- for(const entry of ['index.html','menu.html'])for(const width of [390,1440]){
-  const p=await pageAt(entry,{viewport:{width,height:950}});assert.equal(await p.locator('#promotions-dialog').count(),0);
-  for(const link of await p.locator('[data-promotions-page]').all()){assert.equal(await link.getAttribute('href'),'news.html');assert.equal(await link.getAttribute('target'),null);}
-  await p.locator('.promotions-trigger').click();await p.waitForURL('**/news.html');assert.equal(await p.locator('h1').innerText(),'Поводы\nвстретиться');assert.equal(await p.locator('[data-offer]').count(),3);
-  const telegram=p.locator('[data-telegram-widget]');assert.equal(await telegram.getAttribute('href'),'https://t.me/RESTSCHMIDTBOT?start=src_widget_news');assert.equal(await telegram.getAttribute('rel'),'noopener noreferrer');await p.context().route('https://t.me/**',route=>route.fulfill({status:200,contentType:'text/html',body:'Telegram navigation intercepted locally'}));await telegram.focus();const popupPromise=p.waitForEvent('popup');await telegram.press('Enter');const popup=await popupPromise;await popup.waitForLoadState('domcontentloaded');assert.equal(popup.url(),'https://t.me/RESTSCHMIDTBOT?start=src_widget_news');await popup.close();assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.deepEqual(p.errors,[]);await p.close();
+test('Removed promotions stay absent while Telegram and delivery widgets work on desktop and mobile',async()=>{
+ for(const entry of ['index.html','menu.html'])for(const width of [320,375,390,430,768,1024,1440,1920]){
+  const p=await pageAt(entry,{viewport:{width,height:950}});
+  assert.equal(await p.locator('[data-promotions-page],.promotions-trigger,#promotions-dialog,a[href="news.html"]').count(),0);
+  assert.doesNotMatch(await p.locator('body').innerText(),/Акции/);
+  const expected='https://t.me/RESTSCHMIDTBOT?start='+(entry==='index.html'?'src_widget_home':'src_widget_menu');
+  const telegram=p.locator('[data-telegram-widget]');assert.equal(await telegram.getAttribute('href'),expected);assert.equal(await telegram.getAttribute('rel'),'noopener noreferrer');assert.equal(await telegram.isVisible(),true);
+  const delivery=p.locator('.delivery-widget');assert.equal(await delivery.isVisible(),true);const tgBox=await telegram.boundingBox(),deliveryBox=await delivery.boundingBox();assert(tgBox.y+tgBox.height<=deliveryBox.y-7);
+  assert.equal(await p.locator('[data-section="kitchen"]').getAttribute('href'),'assets/menus/kitchen-menu.pdf');assert.equal(await count(p),10);
+  if(width===390||width===1440){await p.context().route('https://t.me/**',route=>route.fulfill({status:200,contentType:'text/html',body:'Telegram navigation intercepted locally'}));await telegram.focus();const popupPromise=p.waitForEvent('popup');await telegram.press('Enter');const popup=await popupPromise;await popup.waitForLoadState('domcontentloaded');assert.equal(popup.url(),expected);await popup.close();}
+  assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.deepEqual(p.errors,[]);await p.close();
  }
+ assert.equal(fs.existsSync(path.join(root,'news.html')),false);
 });
 test('Mobile mastheads fit logo and phone in one row with the address below the number',async()=>{
  for(const entry of ['index.html','menu.html'])for(const width of [320,360,390,430,640,768,920]){
