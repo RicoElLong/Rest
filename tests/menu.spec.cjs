@@ -204,15 +204,15 @@ test('Both pages share the black-green masthead palette and the updated contact 
   assert.equal(await count(p),10);assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);await p.close();
  }
 });
-test('Header promotions follow banquets and open Telegram while the removed page stays absent',async()=>{
+test('Header promotions opens the homepage main section on all widths and preserves independent widgets',async()=>{
  for(const entry of ['index.html','menu.html'])for(const width of [320,375,390,430,768,1024,1440,1920]){
   const p=await pageAt(entry,{viewport:{width,height:950}});
   assert.equal(await p.locator('[data-promotions-page],.promotions-trigger,#promotions-dialog,a[href="news.html"]').count(),0);
   const header=p.locator(entry==='index.html'?'.topbar-wrap':'.menu-header');
-  const headerExpected='https://t.me/RESTSCHMIDTBOT?start='+(entry==='index.html'?'src_header_home':'src_header_menu');
+  const headerExpected=entry==='index.html'?'#promotions':'index.html#promotions';
   assert.equal(await header.locator('[data-header-promotions]').count(),2);assert.equal(await p.locator('[data-header-promotions]').count(),2);
   for(const link of await header.locator('[data-header-promotions]').all()){
-   assert.equal(await link.textContent(),'Акции');assert.equal(await link.getAttribute('href'),headerExpected);assert.equal(await link.getAttribute('target'),'_blank');assert.equal(await link.getAttribute('rel'),'noopener noreferrer');
+   assert.equal(await link.textContent(),'Акции');assert.equal(await link.getAttribute('href'),headerExpected);assert.equal(await link.getAttribute('target'),null);
    assert.equal(await link.evaluate(el=>el.previousElementSibling.textContent),'Банкеты');
   }
   const expected='https://t.me/RESTSCHMIDTBOT?start='+(entry==='index.html'?'src_widget_home':'src_widget_menu');
@@ -220,13 +220,26 @@ test('Header promotions follow banquets and open Telegram while the removed page
   const delivery=p.locator('.delivery-widget');assert.equal(await delivery.isVisible(),true);const tgBox=await telegram.boundingBox(),deliveryBox=await delivery.boundingBox();assert(tgBox.y+tgBox.height<=deliveryBox.y-7);
   assert.equal(await p.locator('[data-section="kitchen"]').getAttribute('href'),'assets/menus/kitchen-menu.pdf');assert.equal(await count(p),10);
   if(width===390||width===1440){await p.context().route('https://t.me/**',route=>route.fulfill({status:200,contentType:'text/html',body:'Telegram navigation intercepted locally'}));await telegram.focus();const popupPromise=p.waitForEvent('popup');await telegram.press('Enter');const popup=await popupPromise;await popup.waitForLoadState('domcontentloaded');assert.equal(popup.url(),expected);await popup.close();}
-  if(width===390||width===1440){
-   if(width===390)await header.locator('.mobile-toggle,.nav-toggle').click();
-   const link=header.locator('[data-header-promotions]:visible');await link.focus();const opened=p.waitForEvent('popup');await link.press('Enter');const tab=await opened;await tab.waitForLoadState('domcontentloaded');assert.equal(tab.url(),headerExpected);await tab.close();
-  }
+  const toggle=header.locator('.mobile-toggle,.nav-toggle');if(await toggle.isVisible())await toggle.click();
+  const link=header.locator('[data-header-promotions]:visible');await link.focus();await link.press('Enter');
+  await p.waitForFunction(()=>location.hash==='#promotions'&&document.querySelector('main #promotions'));
+  await p.locator('.menu-dish').first().waitFor();
+  await p.waitForFunction(()=>{const section=document.querySelector('#promotions'),header=document.querySelector('.topbar-wrap');return Math.abs(section.getBoundingClientRect().top-header.getBoundingClientRect().bottom-18)<4});
+  assert.equal(await p.locator('main #promotions').count(),1);assert.equal(await p.locator('#promotions-heading').innerText(),'Акции');
+  assert.equal(await p.evaluate(()=>document.querySelector('#banquets').getBoundingClientRect().top<document.querySelector('#promotions').getBoundingClientRect().top&&document.querySelector('#promotions').getBoundingClientRect().top<document.querySelector('#gallery').getBoundingClientRect().top&&document.querySelector('#gallery').getBoundingClientRect().top<document.querySelector('#location').getBoundingClientRect().top),true);
+  const section=p.locator('#promotions');assert.doesNotMatch(await section.innerText(),/скидк|бесплатн|подарок|\d+\s*%/i);assert.equal(await section.locator('.promotion-telegram').getAttribute('href'),'https://t.me/RESTSCHMIDTBOT?start=promo_birthday');
+  await p.waitForFunction(()=>document.querySelector('#promotions img').naturalWidth>0);
+  assert.equal(await p.locator('.mobile-toggle').getAttribute('aria-expanded'),'false');
+  if(width===390||width===1440)await section.screenshot({path:`/workspace/shared/home-promotions-${width}.png`});
   assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);assert.deepEqual(p.errors,[]);await p.close();
  }
  assert.equal(fs.existsSync(path.join(root,'news.html')),false);
+ for(const width of [390,1440]){
+  const p=await browser.newPage({viewport:{width,height:950},reducedMotion:'reduce'});
+  await p.route('**/assets/menu.json?*',async route=>{await new Promise(resolve=>setTimeout(resolve,900));await route.continue()});
+  await p.goto(base+'index.html#promotions');await p.locator('.menu-dish').first().waitFor();await p.waitForFunction(()=>Math.abs(document.querySelector('#promotions').getBoundingClientRect().top-document.querySelector('.topbar-wrap').getBoundingClientRect().bottom-18)<4);
+  await p.close();
+ }
 });
 test('Mobile mastheads fit logo and phone in one row with the address below the number',async()=>{
  for(const entry of ['index.html','menu.html'])for(const width of [320,360,390,430,640,768,920]){
