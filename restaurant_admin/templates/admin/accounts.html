@@ -1,0 +1,26 @@
+{% extends "admin/base.html" %}
+{% from "admin/macros.html" import csrf, input with context %}
+{% block title %}Сотрудники{% endblock %}
+{% block main %}
+<header class="page-head"><h1>Сотрудники</h1></header>
+<details class="card"><summary>Добавить аккаунт</summary>
+<form method="post" class="form-grid">
+  {{ csrf() }}<input type="hidden" name="action" value="create">
+  {{ input('name','Имя',required=true,maxlength=80) }}
+  {{ input('username','Логин',required=true,maxlength=40,autocomplete='off') }}
+  <label>Роль<select name="role"><option value="staff">Сотрудник смены</option><option value="manager">Управляющий</option></select></label>
+  <div><label>Пароль<input name="password" type="password" autocomplete="new-password" minlength="14" maxlength="128" required></label><small>От 14 символов.</small></div>
+  <div class="wide"><button class="primary" type="submit">Создать аккаунт</button></div>
+</form>
+</details>
+<div class="item-grid">
+{% for person in people %}
+<article class="card stack">
+  <div class="subhead"><h2>{{ person.name }}</h2><span class="pill {{ 'confirmed' if person.enabled else 'closed' }}">{{ 'Доступ открыт' if person.enabled else 'Доступ отключён' }}</span></div>
+  <p class="muted">{{ person.username }} · {{ 'Управляющий' if person.role == 'manager' else 'Сотрудник смены' }}</p>
+  {% if person.id != g.user.id %}<form method="post" class="row-actions">{{ csrf() }}<input type="hidden" name="user_id" value="{{ person.id }}"><button class="secondary" type="submit" name="action" value="toggle">{{ 'Отключить доступ' if person.enabled else 'Вернуть доступ' }}</button></form>{% endif %}
+  <details><summary>Сменить пароль</summary><form class="stack" method="post">{{ csrf() }}<input type="hidden" name="user_id" value="{{ person.id }}"><label>Новый пароль<input name="password" type="password" autocomplete="new-password" minlength="14" maxlength="128" required></label><button class="secondary" type="submit" name="action" value="password">Обновить пароль</button></form></details>
+</article>
+{% endfor %}
+</div>
+{% endblock %}

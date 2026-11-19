@@ -1,0 +1,16 @@
+{% extends "admin/base.html" %}
+{% from "admin/macros.html" import csrf, error_message, input with context %}
+{% block title %}Вход{% endblock %}
+{% block main %}
+<section class="entry-panel">
+  <a class="entry-brand" href="{{ url_for('public_page') }}"><span class="brand-mark" aria-hidden="true">Д</span> Дети лейтенанта Шмидта</a>
+  <h1>Вход в админ-панель</h1>
+  {{ error_message(error) }}
+  <form method="post" class="stack">
+    {{ csrf() }}
+    {{ input('username','Логин',type='text',required=true,maxlength=40,autocomplete='username') }}
+    {{ input('password','Пароль',type='password',required=true,maxlength=128,autocomplete='current-password') }}
+    <button class="primary" type="submit">Войти</button>
+  </form>
+</section>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "admin/base.html" %}
+{% from "admin/macros.html" import csrf, error_message, booking_fields with context %}
+{% block title %}Бронирование{% endblock %}
+{% block main %}
+<section class="entry-panel public-entry">
+  <a class="entry-brand" href="{{ url_for('public_page') }}"><span class="brand-mark" aria-hidden="true">Д</span> Дети лейтенанта Шмидта</a>
+  {% if sent %}<h1>Заявка получена</h1><p class="subtitle">Мы свяжемся с вами для подтверждения.</p><a class="primary" href="{{ url_for('public_page') }}">На сайт ресторана</a>
+  {% else %}
+    <h1>{{ 'Обсудить банкет' if data.get('kind') == 'banquet' else 'Запросить стол' }}</h1>
+    <p class="subtitle">Оставьте номер телефона. Мы перезвоним, чтобы уточнить детали.</p>
+    {{ error_message(error) }}
+    <form class="form-grid" method="post">
+      {{ csrf() }}<input type="hidden" name="submission_key" value="{{ key }}">
+      {{ booking_fields(data, earliest=earliest) }}
+      <label class="check wide"><input type="checkbox" name="consent" required{% if data.get('consent') == 'on' %} checked{% endif %}><span>Я ознакомился с <a href="{{ settings.privacy }}">политикой обработки персональных данных</a>.</span></label>
+      <div class="wide row-actions"><button class="primary" type="submit">Отправить заявку</button><a href="tel:{{ settings.phone }}">Позвонить в ресторан</a></div>
+    </form>
+  {% endif %}
+</section>
+{% endblock %}

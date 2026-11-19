@@ -1,0 +1,7 @@
+{% extends "admin/base.html" %}
+{% from "admin/macros.html" import activity %}
+{% block title %}Журнал действий{% endblock %}
+{% block main %}
+<header class="page-head"><h1>Журнал действий</h1></header>
+<section class="card">{{ activity(events, global=true) }}</section>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "admin/base.html" %}
+{% from "admin/macros.html" import csrf, error_message, booking_fields with context %}
+{% block title %}Добавить заявку{% endblock %}
+{% block main %}
+<header class="page-head"><div><a class="back" href="{{ url_for('bookings.queue') }}">Все заявки</a><h1>Добавить заявку</h1></div></header>
+{{ error_message(error) }}
+<form class="card form-grid" method="post">
+  {{ csrf() }}
+  {{ booking_fields(data, private=true) }}
+  <div class="wide row-actions"><button class="primary" type="submit">Сохранить заявку</button></div>
+</form>
+{% endblock %}

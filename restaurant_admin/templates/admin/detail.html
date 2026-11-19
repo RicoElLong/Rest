@@ -1,0 +1,52 @@
+{% extends "admin/base.html" %}
+{% from "admin/macros.html" import csrf, version, input, textarea, activity with context %}
+{% block title %}Заявка № {{ entry.id }}{% endblock %}
+{% macro form_start(action) %}{{ csrf() }}{{ version(entry) }}<input type="hidden" name="action" value="{{ action }}">{% endmacro %}
+{% block main %}
+<header class="page-head">
+  <div><a class="back" href="{{ url_for('bookings.queue') }}">Все заявки</a><h1>{{ entry.name }}</h1><p class="subtitle">{{ types[entry.kind] }} № {{ entry.id }} · {{ sources[entry.source] }} · {{ entry.created_at|time_display }}</p></div>
+  <a class="primary" href="tel:{{ entry.phone }}">Позвонить</a>
+</header>
+<div class="detail-grid">
+  <section class="card stack">
+    <div class="subhead"><h2>Гость и визит</h2><span class="pill {{ entry.status }}">{{ status[entry.status] }}</span></div>
+    <dl class="facts">
+      <div><dt>Телефон</dt><dd><a href="tel:{{ entry.phone }}">{{ entry.phone }}</a></dd></div>
+      <div><dt>Гостей</dt><dd>{{ entry.guests }}</dd></div>
+      <div><dt>Желаемое время</dt><dd>{{ entry.desired_at|time_display }}</dd></div>
+      <div><dt>Ответственный</dt><dd>{{ entry.owner_name or 'Не назначен' }}</dd></div>
+      {% if entry.confirmed_at %}<div><dt>Согласованное время</dt><dd>{{ entry.confirmed_at|time_display }} · {{ entry.confirmed_guests }} гостей</dd></div>{% endif %}
+      {% if entry.contacted_at %}<div><dt>Первый контакт</dt><dd>{{ entry.contacted_at|time_display }}</dd></div>{% endif %}
+      {% if entry.callback_at %}<div><dt>Перезвонить</dt><dd>{{ entry.callback_at|time_display }}</dd></div>{% endif %}
+    </dl>
+    {% if entry.comment %}<p class="note">{{ entry.comment }}</p>{% endif %}
+    {% if matches %}<div class="notice"><strong>Похожие заявки по номеру</strong><ul>{% for match in matches %}<li><a href="{{ url_for('bookings.detail',booking_id=match.id) }}">№ {{ match.id }} · {{ types[match.kind] }} · {{ status[match.status] }} · {{ match.desired_at|time_display }}</a></li>{% endfor %}</ul></div>{% endif %}
+  </section>
+  <section class="card stack">
+    <h2>Действия</h2>
+    {% if entry.status == 'new' %}
+    <form method="post">{{ form_start('claim') }}<button class="primary" type="submit">Взять в работу</button></form>
+    {% elif can_edit and entry.status in ['working','confirmed'] %}
+    {% if not entry.contacted_at or entry.callback_at %}<form method="post">{{ form_start('contact') }}<button class="secondary" type="submit">Связались с гостем</button></form>{% endif %}
+    <form method="post" class="stack">{{ form_start('confirm') }}
+      {{ input('confirmed_at','Согласованное время (Самара)',entry.confirmed_at or entry.desired_at,'datetime-local',true) }}
+      {{ input('confirmed_guests','Согласованное число гостей',entry.confirmed_guests or entry.guests,'number',true,min=1,max=500) }}
+      <label class="check"><input name="recorded" type="checkbox" required> Внесено в журнал ресторана</label>
+      <button class="primary" type="submit">{{ 'Сохранить перенос' if entry.status == 'confirmed' else 'Подтвердить бронь' }}</button>
+    </form>
+    <details><summary>Назначить перезвон</summary><form method="post" class="stack">{{ form_start('callback') }}{{ input('callback_at','Перезвонить (Самара)',entry.callback_at,'datetime-local',true) }}<button class="secondary" type="submit">Сохранить время</button></form></details>
+    <details><summary>Добавить комментарий</summary><form method="post" class="stack">{{ form_start('note') }}{{ textarea('note','Комментарий',required=true) }}<button class="secondary" type="submit">Сохранить комментарий</button></form></details>
+    <details><summary>{{ 'Отменить бронь' if entry.status == 'confirmed' else 'Закрыть без брони' }}</summary><form method="post" class="stack">{{ form_start('cancel' if entry.status == 'confirmed' else 'close') }}
+      {% if entry.status == 'confirmed' %}<p class="muted">Сначала освободите место в журнале ресторана.</p>{% endif %}
+      {{ textarea('reason','Причина',maxlength=500,required=true) }}<button class="danger" type="submit">{{ 'Отменить бронь' if entry.status == 'confirmed' else 'Закрыть заявку' }}</button>
+    </form></details>
+    {% elif g.user.role == 'manager' and entry.status in ['closed','cancelled'] %}
+    <form method="post" class="stack">{{ form_start('reopen') }}{{ textarea('reason','Причина исправления',maxlength=500,required=true) }}<button class="secondary" type="submit">Вернуть в работу</button></form>
+    {% else %}<p class="muted">{{ 'Заявку ведёт другой сотрудник.' if entry.status in ['working','confirmed'] else 'Обработка заявки завершена.' }}</p>{% endif %}
+    {% if staff and entry.status in ['new','working','confirmed'] %}
+    <details><summary>Назначить сотрудника</summary><form method="post" class="stack">{{ form_start('assign') }}<label>Сотрудник<select name="owner" required>{% for person in staff %}<option value="{{ person.id }}"{% if person.id == entry.owner %} selected{% endif %}>{{ person.name }}</option>{% endfor %}</select></label><button class="secondary" type="submit">Назначить</button></form></details>
+    {% endif %}
+  </section>
+</div>
+<section class="card history"><h2>История заявки</h2>{{ activity(events) }}</section>
+{% endblock %}

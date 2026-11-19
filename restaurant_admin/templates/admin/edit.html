@@ -1,0 +1,71 @@
+{% extends "admin/base.html" %}
+{% from "admin/macros.html" import csrf, error_message, version, input, textarea with context %}
+{% block title %}{{ title }}{% endblock %}
+{% block main %}
+<header class="page-head"><div>{% if kind != 'settings' %}<a class="back" href="{{ back }}">{{ 'Меню' if kind == 'dish' else 'Акции' }}</a>{% endif %}<h1>{{ title if item else ('Новое блюдо' if kind == 'dish' else 'Новая акция') }}</h1></div></header>
+{{ error_message(error) }}
+{% if preview %}
+<section class="card preview">
+  <p class="context-date">Предпросмотр</p>
+  {% if kind == 'settings' %}
+  <h2>{{ data.address }}</h2><p>{{ data.phone }}{% if data.hours %} · {{ data.hours }}{% endif %}</p>
+  {% else %}
+  {% set image = data.image %}
+  {% if image %}<img src="{{ '/' ~ image if image.startswith('assets/') else image }}" alt="" loading="lazy">{% endif %}
+  <div><h2>{{ data.name if kind == 'dish' else data.title }}</h2>
+  {% if kind == 'dish' %}<p>{{ (data.priceRub ~ ' ₽') if data.priceVerified else 'Цена уточняется' }}{% if data.weightGrams %} · {{ data.weightGrams }} г{% endif %}</p>{% if data.description %}<p>{{ data.description }}</p>{% endif %}
+  {% else %}{% if data.terms %}<p>{{ data.terms }}</p>{% endif %}{% if data.cta %}<a class="secondary" href="{{ data.url }}" rel="noopener noreferrer">{{ data.cta }}</a>{% endif %}{% endif %}</div>
+  {% endif %}
+</section>
+{% endif %}
+<form class="card form-grid" method="post">
+  {{ csrf() }}{{ version(item) }}
+  {% if kind == 'dish' %}
+  {{ input('name','Название',data.get('name'),required=true,maxlength=120) }}
+  <label>Категория<select name="categoryId" required>{% for cat in categories %}<option value="{{ cat.id }}"{% if data.get('categoryId') == cat.id %} selected{% endif %}>{{ cat.title }}</option>{% endfor %}</select></label>
+  {{ input('priceRub','Цена, ₽',data.get('priceRub'),'number',min=1,max=1000000) }}
+  <label class="check"><input name="priceVerified" type="checkbox"{% if data.get('priceVerified') %} checked{% endif %}> Цена подтверждена</label>
+  {{ input('weightGrams','Вес, г',data.get('weightGrams'),'number',min=1,max=100000) }}
+  {{ input('order','Порядок в категории',data.get('order'),'number',true,min=0,max=1000000) }}
+  <div class="wide">{{ input('image','Ссылка на фотографию',data.get('image').src if data.get('image') is mapping else data.get('image'),maxlength=1000) }}<small>HTTPS-ссылка или путь к готовому фото в assets/.</small></div>
+  <div class="wide">{{ textarea('description','Описание',data.get('description'),2000) }}</div>
+  <div>{{ textarea('ingredients','Состав',data.get('ingredients'),700) }}</div>
+  <div>{{ textarea('allergens','Аллергены',data.get('allergens'),500) }}</div>
+  {% elif kind == 'promo' %}
+  <div class="wide">{{ input('title','Заголовок',data.get('title'),required=true,maxlength=240) }}</div>
+  <div class="wide">{{ input('image','Ссылка на фотографию',data.get('image'),maxlength=1000) }}<small>HTTPS-ссылка или путь к готовому фото в assets/.</small></div>
+  {{ input('start','Начало (Самара)',data.get('start'),'datetime-local') }}
+  {{ input('end','Окончание (Самара)',data.get('end'),'datetime-local') }}
+  {{ input('cta','Текст кнопки',data.get('cta'),maxlength=80) }}
+  {{ input('url','Ссылка кнопки',data.get('url'),'url',maxlength=1000) }}
+  <div class="wide">{{ textarea('terms','Условия',data.get('terms'),2000) }}</div>
+  {% else %}
+  {{ input('phone','Телефон',data.get('phone'),'tel',true,maxlength=24) }}
+  {{ input('hours','Часы работы',data.get('hours'),maxlength=150) }}
+  {{ input('address','Адрес',data.get('address'),required=true,maxlength=150) }}
+  {{ input('map_url','Яндекс Карты',data.get('map_url'),'url',true,maxlength=1000) }}
+  {{ input('telegram','Telegram',data.get('telegram'),'url',true,maxlength=1000) }}
+  {{ input('delivery','Доставка',data.get('delivery'),'url',true,maxlength=1000) }}
+  <div class="wide">{{ input('privacy','Политика обработки персональных данных',data.get('privacy'),'url',maxlength=1000) }}</div>
+  <label class="check wide"><input name="booking" type="checkbox"{% if data.get('booking') %} checked{% endif %}> Принимать заявки на сайте</label>
+  {% endif %}
+  <div class="wide row-actions">
+    <button class="secondary" type="submit" name="action" value="preview">Предпросмотр</button>
+    <button class="secondary" type="submit" name="action" value="save">Сохранить черновик</button>
+    <button class="primary" type="submit" name="action" value="publish">Опубликовать</button>
+  </div>
+</form>
+{% if item and item.live is not none and kind != 'settings' %}
+<details class="card"><summary>Снять с публикации</summary><form method="post" class="stack">{{ csrf() }}{{ version(item) }}<p>Запись исчезнет с сайта. Черновик останется в панели.</p><button class="danger" type="submit" name="action" value="archive">Скрыть на сайте</button></form></details>
+{% endif %}
+{% if versions %}
+<section class="card history"><h2>Предыдущие публикации</h2>
+  {% for revision in versions %}
+  <form class="row-actions revision" method="post">{{ csrf() }}{{ version(item) }}<input type="hidden" name="revision_id" value="{{ revision.id }}">
+    <span>{{ revision.at|time_display }}{% if revision.payload is none %} · Не опубликовано{% endif %}</span>
+    <button class="secondary" type="submit" name="action" value="restore">Восстановить</button>
+  </form>
+  {% endfor %}
+</section>
+{% endif %}
+{% endblock %}

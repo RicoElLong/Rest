@@ -1,0 +1,15 @@
+{% extends "admin/base.html" %}
+{% block title %}Акции{% endblock %}
+{% block main %}
+<header class="page-head"><div><h1>Акции</h1></div>{% if g.user.role == 'manager' %}<a class="primary" href="{{ url_for('content.create',kind='promo') }}">Добавить акцию</a>{% endif %}</header>
+<div class="item-grid">
+{% for row, promo, active in items %}
+<article class="card stack">
+  <span class="pill {{ 'confirmed' if active else 'closed' }}">{{ 'На сайте' if active else 'Скрыта' }}</span>
+  <h2>{{ promo.title }}</h2>
+  {% if promo.start or promo.end %}<p class="muted">{{ ('С ' ~ (promo.start|time_display)) if promo.start else '' }}{{ (' до ' ~ (promo.end|time_display)) if promo.end else '' }} · Самара</p>{% endif %}
+  {% if g.user.role == 'manager' %}<a class="secondary" href="{{ url_for('content.edit',kind='promo',item_id=row.id) }}">Редактировать</a>{% endif %}
+</article>
+{% else %}<section class="empty"><h2>Акций пока нет</h2></section>{% endfor %}
+</div>
+{% endblock %}
