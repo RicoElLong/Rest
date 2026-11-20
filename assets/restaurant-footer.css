@@ -11,8 +11,20 @@
   display: grid;
   grid-template-columns: 1.25fr 1fr .85fr;
   gap: 24px clamp(24px, 5vw, 72px);
+}
+
+.restaurant-footer-inner,
+.restaurant-footer-legal {
   width: min(1200px, calc(100% - 48px));
   margin-inline: auto;
+}
+
+.restaurant-footer-legal {
+  margin-top: 20px;
+  padding-top: 8px;
+  border-top: 1px solid #544b39;
+  color: #c4c6b8;
+  font-size: 14px;
 }
 
 .restaurant-footer-name {
@@ -97,6 +109,10 @@
 
   .restaurant-footer-inner {
     grid-template-columns: 1fr;
+  }
+
+  .restaurant-footer-inner,
+  .restaurant-footer-legal {
     width: calc(100% - 36px);
   }
 
