@@ -57,10 +57,12 @@ p {
   margin: 0 0 12px;
 }
 
-.privacy-draft {
-  padding: 14px 16px;
-  border-left: 2px solid #bfa371;
-  background: #17251a;
+.privacy-version {
+  color: #c4c6b8;
+}
+
+address {
+  font-style: normal;
 }
 
 .privacy-purposes dt {
