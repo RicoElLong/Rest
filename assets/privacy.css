@@ -1,0 +1,74 @@
+:root {
+  color-scheme: dark;
+  background: #080f0b;
+  color: #f2e6d1;
+  font: 100%/1.65 Arial, sans-serif;
+}
+
+body {
+  margin: 0;
+}
+
+.privacy-wrap {
+  width: min(70ch, calc(100% - 36px));
+  margin-inline: auto;
+}
+
+header {
+  padding: 16px 0;
+  border-bottom: 1px solid #544b39;
+}
+
+.privacy-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: #e6cca1;
+  text-underline-offset: .24em;
+}
+
+.privacy-back:focus-visible {
+  outline: 2px solid #e6cca1;
+  outline-offset: 3px;
+}
+
+main {
+  padding-block: clamp(24px, 6vw, 54px) 56px;
+}
+
+h1, h2 {
+  font-family: Georgia, serif;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+h1 {
+  margin-top: 0;
+  font-size: clamp(28px, 5vw, 46px);
+  overflow-wrap: break-word;
+}
+
+h2 {
+  margin: 32px 0 10px;
+  font-size: 24px;
+}
+
+p {
+  margin: 0 0 12px;
+}
+
+.privacy-version {
+  color: #c4c6b8;
+}
+
+address {
+  font-style: normal;
+}
+
+.privacy-purposes dt {
+  font-weight: 700;
+}
+
+.privacy-purposes dd {
+  margin: 2px 0 14px;
+}
