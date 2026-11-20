@@ -12,23 +12,4 @@ body{background:var(--restaurant-bg);color-scheme:dark}
 #dish-dialog,.promotions-dialog,.booking-dialog,.gallery-viewer{background:var(--restaurant-surface)}
 #dish-dialog .dialog-drag-handle,#dish-dialog .dialog-image-wrap{background-color:var(--restaurant-surface)}
 .menu-catalog select option{background:var(--restaurant-surface)}
-
-.footer-links .footer-policy-link,
-.menu-footer .footer-policy-link {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  font-size: 13px;
-  line-height: 1.4;
-  letter-spacing: normal;
-  text-transform: none;
-  text-decoration: underline;
-  text-underline-offset: .24em;
-}
-
-.footer-policy-link:focus-visible {
-  outline: 2px solid #e6cca1;
-  outline-offset: 3px;
-}
-
 @media(max-width:640px){:is(.home-menu,.menu-page) .menu-catalog.catalog-editorial .menu-dish{background:var(--restaurant-surface)}}
