@@ -14,6 +14,7 @@
 <script defer src="assets/section-navigation.js"></script>
 <link rel="stylesheet" href="assets/delivery.css?v=yandex-icon-20261018">
 <link rel="stylesheet" href="assets/telegram-widget.css?v=20261021">
+<link rel="stylesheet" href="assets/restaurant-footer.css">
 </head>
 <body class="menu-page"><a class="skip-link" href="#menu-content">Перейти к меню</a>
 <header class="menu-header"><div class="wrap header-inner"><a class="brand-center" href="index.html" aria-label="Ресторан Дети лейтенанта Шмидта">
@@ -36,7 +37,33 @@
  </div>
 </section>
 <section class="menu-visit wrap"><div><p class="eyebrow">Вкуснее — вместе</p><h2>Увидимся <em>на Волге</em></h2><p>Самара, улица Лейтенанта Шмидта, 1В</p></div><a class="gold-button" href="tel:+78920000000">Забронировать стол <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg></a></section></main>
-<footer class="menu-footer"><div class="wrap"><a href="index.html">Дети лейтенанта Шмидта</a><a href="index.html#location">Как нас найти <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M5 19 19 5M5 5h14v14"/></svg></a><a href="tel:+78920000000">+7 (892) 000-00-00</a></div></footer>
+<footer class="restaurant-footer">
+  <div class="restaurant-footer-inner">
+    <div>
+      <p class="restaurant-footer-name">Дети лейтенанта Шмидта</p>
+      <address>Самара, улица Лейтенанта Шмидта, 1В</address>
+      <a class="restaurant-footer-link" href="https://yandex.ru/maps/org/deti_leytenanta_shmidta/146001632122/" target="_blank" rel="noopener noreferrer" aria-label="Маршрут в Яндекс Картах — откроется в новой вкладке">Маршрут в Яндекс Картах</a>
+    </div>
+    <div>
+      <h2 class="restaurant-footer-heading">Бронирование</h2>
+      <a class="restaurant-footer-link restaurant-footer-phone" href="tel:+78920000000">+7 (892) 000-00-00</a>
+      <div class="restaurant-footer-feedback" hidden>
+        <p>Вопросы, отзывы и предложения</p>
+        <a class="restaurant-footer-telegram" href="https://t.me/RestSchmitBot?start=feedback" target="_blank" rel="noopener noreferrer" aria-label="Написать в Telegram — откроется в новой вкладке">Написать в Telegram</a>
+      </div>
+    </div>
+    <nav aria-labelledby="footer-navigation-heading">
+      <h2 class="restaurant-footer-heading" id="footer-navigation-heading">На сайте</h2>
+      <ul class="restaurant-footer-links">
+        <li><a class="restaurant-footer-link" href="index.html#top">О ресторане</a></li>
+        <li><a class="restaurant-footer-link" href="#selected-menu">Меню</a></li>
+        <li><a class="restaurant-footer-link" href="index.html#banquets">Банкеты</a></li>
+        <li><a class="restaurant-footer-link" href="index.html#gallery">Галерея</a></li>
+        <li><a class="restaurant-footer-link" href="index.html#location">Контакты</a></li>
+      </ul>
+    </nav>
+  </div>
+</footer>
 <dialog id="booking-dialog" class="booking-dialog" aria-labelledby="booking-title"><button class="booking-close" aria-label="Закрыть окно бронирования">×</button><div class="booking-content"><p class="eyebrow">Дети лейтенанта Шмидта</p><h2 id="booking-title">Бронирование зала</h2><p>Позвоните нам, чтобы выбрать зал и обсудить ваше событие.</p><a class="booking-phone" href="tel:+78920000000">+7 (892) 000-00-00</a><a class="gold-button" href="tel:+78920000000">Позвонить в ресторан</a><p class="booking-address">Самара, улица Лейтенанта Шмидта, 1В</p></div></dialog><dialog id="dish-dialog" class="catalog-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-price-status">
  <div class="dialog-drag-handle" aria-hidden="true"><span></span></div>
  <button type="button" class="dialog-close" aria-label="Закрыть описание блюда" autofocus>×</button>
