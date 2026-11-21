@@ -15,6 +15,7 @@
  let catalog=null,category='grill',opener=null,selected='grill',scrollFrame;
  let bodySnapshot=null,dialogAnimation=null,loadSequence=0;
  const categoryTitle=id=>catalog?.categories.find(c=>c.id===id)?.title||'Шашлык и гриль';
+ const priceNote=item=>item.priceVerified?'Цена подтверждена':Number.isFinite(item.priceRub)?'Предварительная цена':'Уточните цену в ресторане';
  const price=item=>Number.isFinite(item.priceRub)?`${number.format(item.priceRub)} ₽`:'Цена уточняется';
  function element(tag,className,text){const el=document.createElement(tag);if(className)el.className=className;if(text!==undefined)el.textContent=text;return el;}
  function motion(target,vars){if(window.gsap&&!reduced.matches)return gsap.fromTo(target,{opacity:0,y:14},{opacity:1,y:0,duration:.35,ease:'power2.out',...vars});return null;}
@@ -84,7 +85,7 @@
  function card(item){
   const refined=section.dataset.cardStyle==='editorial';
   const article=element('article','menu-dish');article.dataset.itemId=item.id;
-  const button=element('button','dish-button');button.type='button';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-controls','dish-dialog');button.setAttribute('aria-label',`${item.name}, ${price(item)}${item.priceVerified?'':', предварительная цена'}. ${refined?'Открыть описание блюда':'Подробнее'}`);
+  const button=element('button','dish-button');button.type='button';button.setAttribute('aria-haspopup','dialog');button.setAttribute('aria-controls','dish-dialog');button.setAttribute('aria-label',`${item.name}, ${price(item)}${!item.priceVerified&&Number.isFinite(item.priceRub)?', предварительная цена':''}${item.available===false?', сейчас недоступно':''}. ${refined?'Открыть описание блюда':'Подробнее'}`);
   const visual=element('span','dish-visual');
   const placeholder=element('span','dish-placeholder');placeholder.append(element('span','catalog-plate'),element('span','','Фотография готовится'));placeholder.firstChild.setAttribute('aria-hidden','true');visual.append(placeholder);
   decoratePlaceholder(placeholder,item);
@@ -93,8 +94,8 @@
   const hint=element('span','dish-detail-hint');hint.setAttribute('aria-hidden','true');hint.innerHTML='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 19 19 5M5 5h14v14"/></svg>';if(!refined)visual.append(hint);
   const ring=document.createElementNS('http://www.w3.org/2000/svg','svg');ring.classList.add('hold-ring');ring.setAttribute('viewBox','0 0 40 40');ring.setAttribute('aria-hidden','true');ring.innerHTML='<circle cx="20" cy="20" r="16" pathLength="100"/>';visual.append(ring);
   const body=element('span','dish-body');if(!refined)body.append(element('span','dish-category',categoryTitle(item.categoryId)));body.append(element('span','dish-name',item.name));
-  const meta=element('span','dish-meta'),priceWrap=element('span','');priceWrap.append(element('span','dish-price',price(item)));if(!refined)priceWrap.append(element('span','dish-price-note',item.priceVerified?'Цена подтверждена':'Предварительная цена'));
-  meta.append(priceWrap);if(!refined)meta.append(element('span','dish-more','Подробнее →'));body.append(meta);button.append(visual,body);article.append(button);addHold(button,item);return article;
+  const meta=element('span','dish-meta'),priceWrap=element('span','');priceWrap.append(element('span','dish-price',price(item)));if(!refined)priceWrap.append(element('span','dish-price-note',priceNote(item)));
+  meta.append(priceWrap);if(item.available===false)body.append(element('span','dish-stop-note','Сейчас недоступно'));if(!refined)meta.append(element('span','dish-more','Подробнее →'));body.append(meta);button.append(visual,body);article.append(button);addHold(button,item);return article;
  }
  function render(animate=true){
   if(!catalog)return;
@@ -138,7 +139,7 @@
    const dataUrl=new URL('menu.json',scriptUrl);dataUrl.search=new URL(scriptUrl).search;
    const response=await fetch(dataUrl,{priority:'high'});if(!response.ok)throw Error(`HTTP ${response.status}`);
    const data=await response.json();
-   if(!Array.isArray(data.items)||!Array.isArray(data.categories)||!data.items.length)throw Error('Invalid catalogue');
+   if(!Array.isArray(data.items)||!Array.isArray(data.categories)||!data.categories.length)throw Error('Invalid catalogue');
    const ids=new Set(data.categories.map(c=>c.id));if(data.items.some(i=>!i.id||!i.name||!ids.has(i.categoryId)))throw Error('Invalid item');
    if(sequence!==loadSequence)return;
    catalog=data;catalog.categories.sort((a,b)=>a.order-b.order);buildCategories();readUrl();
@@ -155,10 +156,13 @@
   note.textContent=item.description||'';note.hidden=!item.description;
   history.textContent=item.history||'';history.closest('.dialog-story').hidden=!item.history;
   root.querySelector('#dialog-price').textContent=price(item);
-  root.querySelector('#dialog-price-status').textContent=item.priceVerified?'Цена подтверждена.':'Предварительная цена. Подтвердите перед заказом.';
+  root.querySelector('#dialog-price-status').textContent=item.available===false?'Сейчас недоступно.':priceNote(item)+'.';
   const weight=root.querySelector('#dialog-weight');weight.hidden=!Number.isFinite(item.weightGrams);weight.textContent=weight.hidden?'':`Выход порции: ${number.format(item.weightGrams)} г`;
   const ingredients=root.querySelector('#dialog-ingredients'),availability=root.querySelector('#dialog-availability');
-  if(ingredients)ingredients.textContent=Array.isArray(item.ingredients)&&item.ingredients.length?`Состав: ${item.ingredients.join(', ')}`:'Точный состав и аллергены пока не подтверждены. Уточните у официанта.';
+  const allergens=root.querySelector('#dialog-allergens');
+  if(allergens){allergens.hidden=!item.allergens;allergens.textContent=item.allergens?`Аллергены: ${item.allergens}`:'';}
+  const recipe=Array.isArray(item.ingredients)?item.ingredients.join(', '):item.ingredients;
+  if(ingredients){ingredients.hidden=!recipe;ingredients.textContent=recipe?`Состав: ${recipe}`:'';}
   if(availability)availability.textContent=item.available===true?'Наличие подтверждено.':item.available===false?'Сейчас недоступно.':'Наличие уточняется у ресторана.';
   const image=root.querySelector('#dialog-image'),zoom=root.querySelector('.dialog-zoom'),wrap=root.querySelector('.dialog-image-wrap'),placeholder=root.querySelector('.catalog-dialog-placeholder');
   decoratePlaceholder(placeholder,item);

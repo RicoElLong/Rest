@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101e17">
+<title>{% block title %}Панель ресторана{% endblock %} · Дети лейтенанта Шмидта</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+</head>
+<body class="{{ 'workspace' if g.user else 'simple' }}">
+{% if g.user %}
+<a class="skip" href="#main">К содержанию</a>
+<aside class="sidebar">
+  <a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-mark" aria-hidden="true">Д</span><span>Дети лейтенанта<br>Шмидта</span></a>
+  {% set endpoint = request.endpoint or '' %}
+  {% set section = 'menu' if request.view_args and request.view_args.get('kind') == 'dish' else 'promos' %}
+  {% set links = [('Заявки','bookings.queue',endpoint.startswith('bookings.')),('Меню','content.menu',endpoint == 'content.menu' or (endpoint in ['content.edit','content.create'] and section == 'menu')),('Акции','content.promos',endpoint == 'content.promos' or (endpoint in ['content.edit','content.create'] and section == 'promos'))] %}
+  {% if g.user.role == 'manager' %}{% set links = links + [('Настройки','content.settings',endpoint == 'content.settings'),('Сотрудники','accounts',endpoint == 'accounts'),('Журнал','journal',endpoint == 'journal')] %}{% endif %}
+  <nav aria-label="Разделы панели">
+  {% for label, route, current in links %}<a href="{{ url_for(route) }}"{% if current %} aria-current="page"{% endif %}>{{ label }}</a>{% endfor %}
+  </nav>
+  <div class="identity"><div><strong>{{ g.user.name }}</strong><span>{{ 'Управляющий' if g.user.role == 'manager' else 'Сотрудник смены' }}</span></div><form method="post" action="{{ url_for('logout') }}"><input type="hidden" name="_csrf" value="{{ csrf_token() }}"><button type="submit" class="quiet">Выйти</button></form></div>
+</aside>
+{% endif %}
+<main id="main" class="main-content">
+  {% for category, message in get_flashed_messages(with_categories=true) %}<p class="notice {{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</p>{% endfor %}
+  {% block main %}{% endblock %}
+</main>
+</body>
+</html>

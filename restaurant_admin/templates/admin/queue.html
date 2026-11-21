@@ -1,0 +1,33 @@
+{% extends "admin/base.html" %}
+{% block title %}Заявки{% endblock %}
+{% block main %}
+<header class="page-head">
+  <div><p class="context-date">{{ context_today.strftime('%d.%m.%Y') }} · Самара</p><h1>Заявки</h1></div>
+  <a class="primary" href="{{ url_for('bookings.manual') }}">Добавить заявку</a>
+</header>
+<nav class="queue-filters" aria-label="Фильтры заявок">
+{% for key, label in [('all','Все заявки'),('new','Новые'),('callback','Перезвонить'),('today','На сегодня')] %}
+<a href="{{ url_for('bookings.queue', view=key) }}"{% if view == key %} aria-current="page"{% endif %}><span>{{ label }}</span><strong>{{ counts[key] }}</strong></a>
+{% endfor %}
+</nav>
+{% if entries %}
+<section aria-label="Список заявок" class="record-list">
+  <div class="record-list-head"><span>Гость</span><span>Визит</span><span>Статус</span><span>Ответственный</span></div>
+  {% for entry in entries %}
+  <a class="record" href="{{ url_for('bookings.detail',booking_id=entry.id) }}">
+    <span><strong>{{ entry.name }}</strong><small>{{ types[entry.kind] }} · {{ sources[entry.source] }} · № {{ entry.id }}</small></span>
+    <span><strong>{{ (entry.confirmed_at or entry.desired_at)|time_display }}</strong><small>Гостей · {{ entry.confirmed_guests or entry.guests }}</small></span>
+    <span><span class="pill {{ entry.status }}">{{ status[entry.status] }}</span>{% if entry.callback_at %}<small class="{{ 'overdue' if entry.callback_at <= now else '' }}">{{ 'Просрочено' if entry.callback_at <= now else 'Перезвонить' }} · {{ entry.callback_at|time_display }}</small>{% endif %}</span>
+    <span>{{ entry.owner_name or 'Не назначен' }}</span>
+  </a>
+  {% endfor %}
+</section>
+{% else %}
+<section class="empty"><h2>{{ 'Заявок пока нет' if page == 1 else 'На этой странице заявок нет' }}</h2><p>{{ 'Обращения с сайта появятся здесь. Звонок или сообщение можно добавить вручную.' if view == 'all' else 'Заявки по этому фильтру появятся здесь.' }}</p></section>
+{% endif %}
+{% if page > 1 or has_next %}<nav class="row-actions pagination" aria-label="Страницы заявок">
+{% if page > 1 %}<a class="secondary" href="{{ url_for('bookings.queue',view=view,page=page-1) }}">Предыдущая</a>{% endif %}
+<span>Страница {{ page }}</span>
+{% if has_next %}<a class="secondary" href="{{ url_for('bookings.queue',view=view,page=page+1) }}">Следующая</a>{% endif %}
+</nav>{% endif %}
+{% endblock %}

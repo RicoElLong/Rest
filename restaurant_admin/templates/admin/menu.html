@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %}
+{% from "admin/macros.html" import csrf, version with context %}
+{% block title %}Меню{% endblock %}
+{% block main %}
+<header class="page-head"><div><h1>Меню</h1></div>{% if g.user.role == 'manager' %}<a class="primary" href="{{ url_for('content.create',kind='dish') }}">Добавить блюдо</a>{% endif %}</header>
+<form class="card search-bar" method="get">
+  <label>Найти блюдо<input type="search" name="q" value="{{ query }}" maxlength="120" placeholder="Название блюда"></label>
+  <label>Категория<select name="category"><option value="">Все категории</option>{% for cat in categories %}<option value="{{ cat.id }}"{% if category == cat.id %} selected{% endif %}>{{ cat.title }}</option>{% endfor %}</select></label>
+  <button class="secondary" type="submit">Найти</button>
+</form>
+{% if items %}
+<section class="record-list dish-list" aria-label="Блюда">
+  <div class="record-list-head"><span>Блюдо</span><span>На сайте</span><span>Действия</span></div>
+  {% for row, draft, live in items %}
+  {% set dish = draft if g.user.role == 'manager' else live %}
+  <div class="record">
+    <span><strong>{{ dish.name }}</strong><small>{% for cat in categories %}{% if cat.id == dish.categoryId %}{{ cat.title }}{% endif %}{% endfor %}</small></span>
+    <span>{% if row.stopped and live %}<span class="pill cancelled">В стоп-листе</span>{% elif not live %}<span class="pill closed">Скрыто</span>{% elif not live.priceVerified %}<span class="pill working">Цена уточняется</span>{% else %}<strong>{{ live.priceRub }} ₽</strong>{% endif %}
+    {% if g.user.role == 'manager' and row.draft != row.live %}<small>Есть черновик{% if draft.priceRub %} · {{ draft.priceRub }} ₽{% endif %}</small>{% endif %}</span>
+    <div class="row-actions">
+      {% if live %}<form method="post" action="{{ url_for('content.stop',item_id=row.id) }}">{{ csrf() }}{{ version(row) }}<input type="hidden" name="q" value="{{ query }}"><input type="hidden" name="category" value="{{ category }}"><button class="secondary" type="submit">{{ 'Снять со стопа' if row.stopped else 'В стоп-лист' }}</button></form>{% endif %}
+      {% if g.user.role == 'manager' %}<a class="secondary" href="{{ url_for('content.edit',kind='dish',item_id=row.id) }}">Редактировать</a>{% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</section>
+{% else %}<section class="empty"><h2>Блюда не найдены</h2><p>Попробуйте изменить поиск или категорию.</p></section>{% endif %}
+{% endblock %}

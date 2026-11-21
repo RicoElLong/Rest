@@ -5,3 +5,7 @@
 .promotion-copy{min-width:0;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:40px clamp(24px,3vw,48px)}.promotion-copy .eyebrow{margin:0 0 18px}.promotion-copy h3{font:400 clamp(29px,3vw,42px)/1.2 Georgia,serif;letter-spacing:-.02em;margin:0 0 22px;color:#f2e6d1}.promotion-copy p:not(.eyebrow){font:15px/1.8 Georgia,serif;color:#d8d9ce;margin:0 0 16px}.promotion-telegram{display:inline-flex;align-items:center;justify-content:space-between;gap:24px;min-height:48px;padding:13px 22px;background:#e6cca1;color:#080f0b!important;-webkit-text-fill-color:#080f0b;border:1px solid #e6cca1;border-radius:999px;font:700 13px/1.4 Arial,sans-serif;text-decoration:none;transition:background .2s}.promotion-telegram:hover{background:#f0d8b0}.promotion-telegram:focus-visible{outline:2px solid #f0d8b0;outline-offset:4px}.promotion-telegram svg{width:20px;height:20px;flex:none}.promotion-copy p.promotion-consent{font:11px/1.7 Arial,sans-serif;color:#aab5a6;margin:16px 0 0}
 @media(max-width:760px){.promotions-section{padding:40px 0}.promotions-heading{margin-bottom:22px}.promotion-feature{grid-template-columns:1fr}.promotion-photo{min-height:0;aspect-ratio:16/9}.promotion-copy{padding:28px 24px}.promotion-copy h3{font-size:30px}}
 @media(prefers-reduced-motion:reduce){.promotion-telegram{transition:none}}
+
+.promotion-feature + .promotion-feature { margin-top: 1.25rem; }
+.promotion-feature.promotion-text-only { grid-template-columns: minmax(0, 1fr); }
+.promotion-terms { white-space: pre-wrap; }

@@ -1,0 +1,8 @@
+{% extends "admin/base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block main %}
+<section class="{{ 'card' if g.user else 'entry-panel' }} stack">
+  <h1>{{ title }}</h1>
+  <a class="secondary" href="{{ url_for('dashboard') if admin else url_for('public_page') }}">{{ 'К заявкам' if admin else 'На сайт ресторана' }}</a>
+</section>
+{% endblock %}

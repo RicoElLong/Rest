@@ -1,0 +1,24 @@
+{% macro csrf() %}<input type="hidden" name="_csrf" value="{{ csrf_token() }}">{% endmacro %}
+{% macro version(row) %}{% if row %}<input type="hidden" name="version" value="{{ row.version }}">{% endif %}{% endmacro %}
+{% macro error_message(error) %}{% if error %}<p class="notice error" role="alert">{{ error }}</p>{% endif %}{% endmacro %}
+{% macro input(name, label, value='', type='text', required=false, maxlength=none, min=none, max=none, autocomplete=none) %}
+<label>{{ label }}<input name="{{ name }}" type="{{ type }}" value="{{ value if value is not none else '' }}"{% if required %} required{% endif %}{% if maxlength %} maxlength="{{ maxlength }}"{% endif %}{% if min is not none %} min="{{ min }}"{% endif %}{% if max is not none %} max="{{ max }}"{% endif %}{% if autocomplete %} autocomplete="{{ autocomplete }}"{% endif %}></label>
+{% endmacro %}
+{% macro textarea(name, label, value='', maxlength=1000, required=false) %}
+<label>{{ label }}<textarea name="{{ name }}" rows="3" maxlength="{{ maxlength }}"{% if required %} required{% endif %}>{{ value if value is not none else '' }}</textarea></label>
+{% endmacro %}
+{% macro booking_fields(data, private=false, earliest=none) %}
+<label>Тип заявки<select name="kind"><option value="table"{% if data.get('kind') == 'table' %} selected{% endif %}>Стол</option><option value="banquet"{% if data.get('kind') == 'banquet' %} selected{% endif %}>Банкет</option></select></label>
+{% if private %}<label>Откуда поступила заявка<select name="source"><option value="phone"{% if data.get('source') == 'phone' %} selected{% endif %}>Телефон</option><option value="messenger"{% if data.get('source') == 'messenger' %} selected{% endif %}>Мессенджер</option></select></label>{% endif %}
+{{ input('name','Имя',data.get('name'),'text',true,100,autocomplete='given-name') }}
+{{ input('phone','Телефон',data.get('phone'),'tel',true,24,autocomplete='tel') }}
+{{ input('guests','Число гостей',data.get('guests'),'number',true,min=1,max=500) }}
+<div>{{ input('desired_at','Желаемая дата и время',data.get('desired_at'),'datetime-local',min=earliest) }}<small>Время Самары. Для банкета дату можно уточнить позже.</small></div>
+<div class="wide">{{ textarea('comment','Комментарий (по желанию)',data.get('comment')) }}</div>
+{% endmacro %}
+{% macro activity(events, global=false) %}
+{% if events %}<ol class="activity">
+{% for event in events %}
+<li><div><strong>{{ event.action }}</strong>{% if global and event.entity == 'booking' %} <a href="{{ url_for('bookings.detail', booking_id=event.entity_id) }}">№ {{ event.entity_id }}</a>{% endif %}{% if event.detail %}<p>{{ event.detail }}</p>{% endif %}</div><small>{{ event.name }} · {{ event.at|time_display }}</small></li>
+{% endfor %}</ol>{% else %}<p class="muted">Действий пока нет.</p>{% endif %}
+{% endmacro %}
