@@ -2,8 +2,8 @@
 <html lang="ru" prefix="og: https://ogp.me/ns#"><head><meta charset="utf-8">
 <link rel="icon" href="assets/favicon.ico?v=2" sizes="16x16 32x32 48x48 64x64 96x96">
 <link rel="preload" href="assets/logo-car-compatible.png?v=logo-20261016" as="image" fetchpriority="high">
-<link rel="preload" href="assets/menu.json?v=kitchen-pdf-20261021" as="fetch" crossorigin="anonymous" fetchpriority="high">
-<script defer src="assets/menu.js?v=kitchen-pdf-20261021" fetchpriority="high"></script>
+<link rel="preload" href="assets/menu.json?v=catalog-clean-20261123" as="fetch" crossorigin="anonymous" fetchpriority="high">
+<script defer src="assets/menu.js?v=catalog-clean-20261123" fetchpriority="high"></script>
 <script defer src="assets/vendor/gsap.min.js" fetchpriority="low"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#080f0b"><title>Меню — Дети лейтенанта Шмидта</title><meta name="description" content="Меню ресторана Дети лейтенанта Шмидта в Самаре: кухня, гриль, десерты и напитки.">
 <meta property="og:type" content="website">
@@ -18,12 +18,12 @@
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Золотистый ретроавтомобиль и название ресторана «Дети лейтенанта Шмидта» на тёмно-зелёном фоне">
 <link rel="stylesheet" href="assets/menu.css"><link rel="stylesheet" href="assets/brand.css?v=telegram-link-20261021">
-<link rel="stylesheet" href="assets/catalog.css?v=mobile-20261016">
-<link rel="stylesheet" href="assets/menu-navigation.css?v=actions-20261016">
+<link rel="stylesheet" href="assets/catalog.css?v=catalog-clean-20261123">
+<link rel="stylesheet" href="assets/menu-navigation.css?v=catalog-clean-20261123">
 <link rel="stylesheet" href="assets/menu-cards.css">
 <link rel="stylesheet" href="assets/header-navigation.css?v=contacts-row-20261016">
-<link rel="stylesheet" href="assets/mobile.css?v=logo-left-20261016">
-<link rel="stylesheet" href="assets/black-green.css?v=palette-20261016">
+<link rel="stylesheet" href="assets/mobile.css?v=catalog-clean-20261123">
+<link rel="stylesheet" href="assets/black-green.css?v=footer-alignment-20261123">
 <script defer src="assets/section-navigation.js"></script>
 <link rel="stylesheet" href="assets/delivery.css?v=yandex-icon-20261018">
 <link rel="stylesheet" href="assets/telegram-widget.css?v=20261021">
@@ -40,11 +40,10 @@
  <div class="wrap">
   <div class="selection-head"><div><p class="eyebrow" id="selection-kicker">Грузинская кухня · волжское гостеприимство</p><h2 id="selection-heading" tabindex="-1" data-catalog-title="Гастрономическая карта">Гастрономическая карта</h2></div><div class="selection-actions"><button class="close-selection" aria-label="Свернуть каталог блюд">Свернуть ×</button></div></div>
   <div class="catalog-category-wrap"><div class="dish-filters catalog-categories" role="group" aria-label="Категории блюд"></div></div>
-  <div class="catalog-toolbar"><label class="catalog-sort"><span>Порядок</span><select id="dish-sort"><option value="menu">Как в меню</option><option value="price-asc">Цена по возрастанию</option><option value="price-desc">Цена по убыванию</option><option value="name">По названию</option></select></label></div>
-  <p id="menu-status" class="catalog-status" role="status" aria-live="polite">Загружаем меню…</p>
+  <p id="menu-status" class="sr-only" role="status" aria-live="polite">Загружаем меню…</p>
   <div class="catalog-error" hidden><p>Не удалось загрузить меню. Проверьте соединение и попробуйте ещё раз.</p><button type="button" class="catalog-retry">Повторить загрузку</button></div>
   <div class="dish-grid" id="dish-grid" aria-busy="true"></div>
-  <div class="empty-state" hidden><p>Таких блюд не нашли.</p><button type="button" class="catalog-reset">Сбросить сортировку</button></div>
+  <div class="empty-state" hidden><p>Таких блюд не нашли.</p></div>
   <noscript><p>Для просмотра подробных карточек включите JavaScript. <a href="assets/menu.json">Скачать каталог JSON</a> или позвоните в ресторан.</p></noscript>
  </div>
 </section>

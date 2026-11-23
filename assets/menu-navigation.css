@@ -13,13 +13,8 @@
 .menu-catalog.catalog-editorial .catalog-categories button[aria-pressed=true]{color:#e6cca1;background:transparent;border:0}
 .menu-catalog.catalog-editorial .catalog-categories button[aria-pressed=true]::after{transform:scaleX(1)}
 .menu-catalog.catalog-editorial .catalog-categories button:focus-visible{outline:1px solid #d8b778;outline-offset:0;color:#e6cca1}
-.menu-catalog.catalog-editorial .catalog-toolbar{display:flex;justify-content:flex-start;align-items:end;gap:28px;padding:16px 0 6px}
-.menu-catalog.catalog-editorial .catalog-search{flex:0 1 340px;max-width:340px;min-width:0}
-.menu-catalog.catalog-editorial .catalog-sort{flex:0 1 215px;min-width:0}
-.menu-catalog.catalog-editorial .catalog-search,.menu-catalog.catalog-editorial .catalog-sort{gap:3px;color:#a6ad99;font:10px/1.4 Arial,sans-serif}
 .menu-catalog.catalog-editorial input,.menu-catalog.catalog-editorial select{min-height:40px;padding:8px 0;border:0;border-bottom:1px solid #a58d5e55;border-radius:0;background:transparent;color:#e8dfcd;font:13px/1.5 Arial,sans-serif;box-shadow:none}
 .menu-catalog.catalog-editorial select{padding-right:18px}.menu-catalog.catalog-editorial select option{background:#102018;color:#f2e6d1}
-.menu-catalog.catalog-editorial .catalog-status{margin:12px 0 10px;font-size:11px;color:#a6ad99}
 @media(hover:hover){.menu-catalog.catalog-editorial .catalog-categories button:hover{background:transparent;color:#e6cca1}.menu-catalog.catalog-editorial .catalog-categories button:hover::after{transform:scaleX(1)}}
 @media(max-width:640px){
  .menu-catalog.catalog-editorial .selection-head{gap:12px}
@@ -32,9 +27,6 @@
  .menu-catalog.catalog-editorial .catalog-categories{gap:0 18px;padding-bottom:4px}
  .menu-catalog.catalog-editorial .catalog-categories button{font-size:15px;padding:8px 0 11px}
  .menu-catalog.catalog-editorial .catalog-notice{margin-bottom:16px}
- .menu-catalog.catalog-editorial .catalog-toolbar{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:18px;padding-top:14px}
- .menu-catalog.catalog-editorial .catalog-search,.menu-catalog.catalog-editorial .catalog-sort{width:100%;max-width:none}
  .menu-catalog.catalog-editorial input,.menu-catalog.catalog-editorial select{min-height:44px;font-size:12px}
- .menu-catalog.catalog-editorial .catalog-status{font-size:10px;line-height:1.7}
 }
 @media(prefers-reduced-motion:reduce){.menu-catalog.catalog-editorial .catalog-categories button,.menu-catalog.catalog-editorial .catalog-categories button::after{transition:none}}

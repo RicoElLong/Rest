@@ -13,11 +13,20 @@ body{background:var(--restaurant-bg);color-scheme:dark}
 #dish-dialog .dialog-drag-handle,#dish-dialog .dialog-image-wrap{background-color:var(--restaurant-surface)}
 .menu-catalog select option{background:var(--restaurant-surface)}
 
-.footer-links .footer-policy-link,
-.menu-footer .footer-policy-link {
+.footer-links {
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.footer-links > a,
+.menu-footer .wrap > a {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
+}
+
+.footer-links .footer-policy-link,
+.menu-footer .footer-policy-link {
   font-size: 13px;
   line-height: 1.4;
   letter-spacing: normal;
@@ -29,6 +38,12 @@ body{background:var(--restaurant-bg);color-scheme:dark}
 .footer-policy-link:focus-visible {
   outline: 2px solid #e6cca1;
   outline-offset: 3px;
+}
+
+@media (min-width: 641px) {
+  .menu-footer .wrap {
+    align-items: center;
+  }
 }
 
 @media(max-width:640px){:is(.home-menu,.menu-page) .menu-catalog.catalog-editorial .menu-dish{background:var(--restaurant-surface)}}

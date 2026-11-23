@@ -61,9 +61,6 @@
  .menu-catalog.catalog-editorial .catalog-notice{font-size:11px;line-height:1.65;padding-left:10px;margin-bottom:12px}
  .menu-catalog.catalog-editorial .catalog-categories{margin:0;gap:0 16px;padding:0 0 4px}
  .menu-catalog.catalog-editorial .catalog-categories button{font-size:14px;min-height:44px;padding-block:9px 11px}
- .menu-catalog.catalog-editorial .catalog-toolbar{grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:14px;padding:14px 0 4px}
- .menu-catalog.catalog-editorial .catalog-search,.menu-catalog.catalog-editorial .catalog-sort{font-size:11px;gap:4px}
- .menu-catalog.catalog-editorial .catalog-status{margin:10px 0 4px}
  :is(.home-menu,.menu-page) .menu-catalog.catalog-editorial .dish-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 12px;padding:12px 0 22px}
  :is(.home-menu,.menu-page) .menu-catalog.catalog-editorial .menu-dish{border:1px solid #e6cca126;border-radius:10px;overflow:hidden;background:#112017;box-shadow:none}
  :is(.home-menu,.menu-page) .menu-catalog.catalog-editorial .dish-visual{aspect-ratio:4/3;border-radius:0;box-shadow:none}
