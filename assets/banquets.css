@@ -14,4 +14,4 @@
 @media(max-width:920px){.banquet-section .hall-grid{gap:14px}.banquet-section .hall-info{padding:16px}.banquet-section .banquet-panel{padding:44px 24px 48px}}
 @media(max-width:640px){.banquet-section .banquet-panel{padding:40px 16px 44px}.banquet-section .panel-head{align-items:flex-start}.banquet-section .panel-sub{max-width:190px;font-size:9px}.banquet-section .hall-grid{grid-template-columns:1fr;gap:20px}.banquet-section .hall-photo{aspect-ratio:1.6}.banquet-section .hall-info{padding:20px}.banquet-section .hall h3{font-size:13px}.banquet-section .text-link{margin-top:16px;min-height:32px}}
 
-.banquet-photo-note{font:11px/1.7 Arial,sans-serif;color:#9da992;margin:0 0 22px}.hall-arrow{width:14px;height:14px}
+.hall-arrow{width:14px;height:14px}
